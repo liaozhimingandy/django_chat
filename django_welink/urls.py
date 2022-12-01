@@ -15,7 +15,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from rest_framework.routers import DefaultRouter
+from moment.views import MomentViewSet
 
 urlpatterns = [
     path('admin/', admin.site.urls),
 ]
+
+router = DefaultRouter()  # 可以处理视图的路由器
+router.register('api/moments', MomentViewSet, basename="moment")  # 向路由器中注册视图集,"user":浏览器访问的路径，basename:路由别名
+# router.register('DemoAPIView', DemoAPIView, basename="demo")
+urlpatterns += router.urls  # 将路由器中的所以路由信息追到到django的路由列表中
