@@ -1,0 +1,17 @@
+version: '3.7'
+
+services:
+  demo:
+    image: django-drestf-demo:latest
+#    for producation
+    command: gunicorn drestf_proj.wsgi:application --workers 3 --bind :8000
+#    for beta
+#    command: python manage.py runserver 0.0.0.0:8000
+    ports:
+      - 8000:8000
+    env_file:
+      - ./config/.env.dev
+    environment:
+      - TZ=Asia/Shanghai
+    # volumes:
+    #   - .:/opt/django-idcops
