@@ -1,3 +1,6 @@
+import datetime
+
+import pytz
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
@@ -7,10 +10,12 @@ from moment.serializers import MomentSerializer
 
 
 # Create your views here.
-class MomentViewSet(viewsets.ViewSet):
+class MomentViewSet(viewsets.ModelViewSet):
     """
     动态视图集
     """
+    queryset = Moment.objects.all()
+    serializer_class = MomentSerializer
 
     def list(self, request):
         qs = Moment.objects.all()
@@ -19,16 +24,34 @@ class MomentViewSet(viewsets.ViewSet):
         return Response(moments.data)
 
     def create(self, request):
-        print(request.data)
-        r = Response({'gmt_created': 1})
-        r['Access-Control-Allow-Origin'] = '*'
-        r['Access-Control-Allow-Methods'] = 'post'
-        r['Access-Control-Allow-Headers'] = 'x-requested-with,content-type'
-        return Response({'gmt_created': 1})
+        moment = request.data
+
+        ip = request.META.get('HTTP_X_FORWARDED_FOR') if 'HTTP_X_FORWARDED_FOR' in request.META \
+            else request.META.get('REMOTE_ADDR')
+        moment["from_ip"] = ip
+
+        serializer = MomentSerializer(data=moment)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        data = {
+            "code": 200,
+            "msg": "保存成功",
+            "gmt_created": datetime.datetime.now(tz=pytz.timezone('Asia/Shanghai')).isoformat(sep='T', timespec='seconds')
+        }
+        return Response(data=data)
 
     @action(detail=False, methods=['get'])
     def lasted(self, request):
         """返回最近十条数据"""
         moments = Moment.objects.order_by('-moment_id')[:10]
         moments_ser = self.get_serializer(moments, many=True)
-        return Response(moments_ser.data, status=status.HTTP_400_BAD_REQUEST)
+
+        data = {
+            "code": 200,
+            "msg": "处理成功",
+            "gmt_created": datetime.datetime.now(tz=pytz.timezone('Asia/Shanghai')).isoformat(sep='T',
+                                                                                              timespec='seconds'),
+            "data": moments_ser.data
+        }
+        return Response(data, status=status.HTTP_200_OK)
