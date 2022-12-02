@@ -7,15 +7,28 @@ from moment.serializers import MomentSerializer
 
 
 # Create your views here.
-class MomentViewSet(viewsets.ModelViewSet):
+class MomentViewSet(viewsets.ViewSet):
     """
     动态视图集
     """
-    queryset = Moment.objects.all()
-    serializer_class = MomentSerializer
+
+    def list(self, request):
+        qs = Moment.objects.all()
+        moments = MomentSerializer(qs, many=True)
+
+        return Response(moments.data)
+
+    def create(self, request):
+        print(request.data)
+        r = Response({'gmt_created': 1})
+        r['Access-Control-Allow-Origin'] = '*'
+        r['Access-Control-Allow-Methods'] = 'post'
+        r['Access-Control-Allow-Headers'] = 'x-requested-with,content-type'
+        return Response({'gmt_created': 1})
 
     @action(detail=False, methods=['get'])
     def lasted(self, request):
-        moments = Moment.objects.latest('moment_id')
-        moments_ser = self.get_serializer(moments)
+        """返回最近十条数据"""
+        moments = Moment.objects.order_by('-moment_id')[:10]
+        moments_ser = self.get_serializer(moments, many=True)
         return Response(moments_ser.data, status=status.HTTP_400_BAD_REQUEST)
