@@ -14,15 +14,19 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, re_path
 from rest_framework.routers import DefaultRouter
+
 from moment.views import MomentViewSet
+from user.views import LoginView, OauthViewSet
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    re_path('^api/token/$', LoginView.as_view(), name='token_obtain_pair'),
+    # re_path('^api/token/refresh/$', TokenRefreshView.as_view(), name='token_refresh'),
 ]
 
 router = DefaultRouter()  # 可以处理视图的路由器
 router.register('api/moments', MomentViewSet, basename="moment")  # 向路由器中注册视图集,"user":浏览器访问的路径，basename:路由别名
-# router.register('DemoAPIView', DemoAPIView, basename="demo")
+router.register('api/oauth', OauthViewSet, basename="oauth")
 urlpatterns += router.urls  # 将路由器中的所以路由信息追到到django的路由列表中

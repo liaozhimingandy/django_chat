@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 import os
+from datetime import timedelta
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -40,9 +41,11 @@ INSTALLED_APPS = [
     # 第三方app
     'rest_framework',
     'corsheaders',  # 添加：跨域组件
+    'django_filters',
 
     # 自定义app
-    'moment'
+    'moment',
+    'user'
 ]
 
 MIDDLEWARE = [
@@ -132,5 +135,44 @@ CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_WHITELIST = (
     'http://127.0.0.1:8080',
     'http://localhost:8080',
+    'https://alsoappwelinkapi.kele.plus',
+    'http://alsoappwelinkapi.kele.plus',
     # 这里需要注意： 1. 必须添加http://否则报错（https未测试） 2. 此地址就是允许跨域的地址，即前端地址
 )
+
+# drestf 设置
+REST_FRAMEWORK = {
+    # 分页设置
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10,
+    # 指定过滤后端
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend', ],
+
+    'DEFAULT_THROTTLE_CLASSES': (  # 定义限流类
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle'
+    ),
+    # 定义限流速率（支持天数/时/分/秒的限制）
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '10/m',
+        'user': '30/m',
+    },
+
+    # 异常处理
+    # 'EXCEPTION_HANDLER': 'luffy.utils.exceptions.custom_exception_handler',
+
+    # 定义认证配置
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        # 'rest_framework_simplejwt.authentication.JWTAuthentication',  # jwt认证
+        # 'user.utils.JWTAuthentication',
+        'rest_framework.authentication.BasicAuthentication',  # 基本认证
+        'rest_framework.authentication.SessionAuthentication',  # session认证
+    ),
+    # 默认权限设置
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.AllowAny',
+    )
+}
+
+# 自定义用户表
+AUTH_USER_MODEL = 'user.User'

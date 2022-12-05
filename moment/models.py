@@ -4,7 +4,7 @@ from django.db import models
 # Create your models here.
 class Moment(models.Model):
     moment_id = models.AutoField(primary_key=True)
-    moment = models.CharField(null=False, blank=False, help_text="动态内容", max_length=1024)
+    moment = models.CharField(null=False, blank=False, help_text="动态内容", max_length=1024, verbose_name='动态内容')
     user_id = models.CharField(default='', help_text="所属用户id", max_length=1024)
     loc = models.CharField(null=True, blank=True, default='', help_text="位置", max_length=1024)
     gmt_created = models.DateTimeField(auto_now=True, help_text="创建日期时间")
@@ -25,3 +25,4 @@ class Moment(models.Model):
         db_table = "wl_moment"
         verbose_name = "动态表"
         verbose_name_plural = verbose_name
+        ordering = ['-moment_id', ]
