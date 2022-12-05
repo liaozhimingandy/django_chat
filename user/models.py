@@ -77,13 +77,17 @@ class WLUserManager(BaseUserManager):
 
 # Create your models here.
 class User(AbstractBaseUser, PermissionsMixin):
+    @property
+    def uid_default(self):
+        return str(uuid.uuid4())
+
     sex_code = (
         (0, '未知'),
         (1, '男'),
         (2, '女')
     )
     id = models.AutoField(primary_key=True)
-    uid = models.CharField(null=False, unique=True, blank=False, help_text='用户id', max_length=512)
+    uid = models.CharField(null=False, unique=True, blank=False, help_text='用户id', max_length=512, default=uid_default)
     nick_name = models.CharField(null=False, blank=False, help_text='用户昵称', max_length=512)
     username = models.CharField(unique=True, null=False, blank=False, help_text='登录名', max_length=512)
     email = models.CharField(null=True, blank=True, help_text='电子邮箱', max_length=512)
@@ -120,6 +124,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'username'
 
     objects = WLUserManager()
+
 
     class Meta:
         db_table = 'wl_user'
