@@ -1,12 +1,18 @@
 import uuid
 
 from django.contrib import auth
+from django.conf import settings
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import AbstractUser, PermissionsMixin
 from django.db import models
 from django.apps import apps
 from django.utils.translation import gettext_lazy as _
+
+from user.lib import LeafSnowFlake
+
+# 生成序号
+leaf_snowflake = LeafSnowFlake.IdWorker(data_center_id=settings.DATA_CENTER_ID, worker_id=settings.DATA_CENTER_ID)
 
 
 class WLUserManager(BaseUserManager):
@@ -77,9 +83,10 @@ class WLUserManager(BaseUserManager):
 
 # Create your models here.
 class User(AbstractBaseUser, PermissionsMixin):
-    @property
-    def uid_default(self):
-        return str(uuid.uuid4())
+
+    @staticmethod
+    def _uid_default():
+        return f"wlid_{str(leaf_snowflake.get_id(useragent='left-snowflake-uid'))}"
 
     sex_code = (
         (0, '未知'),
@@ -87,7 +94,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         (2, '女')
     )
     id = models.AutoField(primary_key=True)
-    uid = models.CharField(null=False, unique=True, blank=False, help_text='用户id', max_length=512, default=uid_default)
+    uid = models.CharField(null=False, unique=True, blank=False, help_text='用户id', max_length=512, default=_uid_default)
     nick_name = models.CharField(null=False, blank=False, help_text='用户昵称', max_length=512)
     username = models.CharField(unique=True, null=False, blank=False, help_text='登录名', max_length=512)
     email = models.CharField(null=True, blank=True, help_text='电子邮箱', max_length=512)
@@ -124,7 +131,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'username'
 
     objects = WLUserManager()
-
 
     class Meta:
         db_table = 'wl_user'

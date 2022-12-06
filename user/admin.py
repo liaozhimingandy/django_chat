@@ -7,6 +7,7 @@ from user.models import User
 class UserAdmin(admin.ModelAdmin):
     list_display = ["uid", "username"]
     exclude = ['gmt_created', ]
+    readonly_fields = ('uid', 'id')
     # 搜索
     search_fields = ['uid']
     # 分页 - 设置每页最大显示数目

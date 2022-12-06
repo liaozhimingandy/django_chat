@@ -176,3 +176,8 @@ REST_FRAMEWORK = {
 
 # 自定义用户表
 AUTH_USER_MODEL = 'user.User'
+
+# 数据中心区域
+DATA_CENTER_ID = 1
+# 服务编号
+WORKER_ID = 1

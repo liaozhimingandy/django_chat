@@ -1,9 +1,6 @@
-import datetime
-
-import pytz
 from rest_framework.decorators import action
 from rest_framework.filters import OrderingFilter
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.throttling import AnonRateThrottle
 
@@ -11,7 +8,7 @@ from moment.models import Moment
 from rest_framework import viewsets, status
 from moment.serializers import MomentSerializer
 
-from user.utils import JWTAuthentication
+from user.lib.TokenUtil import JWTAuthentication
 
 # Create your views here.
 class MomentViewSet(viewsets.ModelViewSet):

@@ -5,7 +5,7 @@ import time
 import logging
 import re
 
-from ..utils import Singleton
+from user.lib.utils import Singleton
 
 
 class InputError(Exception):
@@ -126,7 +126,6 @@ class IdWorker(object):
 
     def get_datacenter_id(self):
         return self.data_center_id
-
 
 if __name__ == '__main__':
     print(__name__)
