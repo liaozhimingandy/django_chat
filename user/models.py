@@ -105,7 +105,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     mobile = models.CharField(null=True, blank=True, help_text='手机号码', max_length=16)
     sex = models.SmallIntegerField(null=False, choices=sex_code, help_text='性别', default=0)
     avatar = models.CharField(null=True, max_length=128, help_text='头像图片')
-    user_status = models.CharField(null=True, default=True, help_text='用户状态信息,用户自定义')
+    user_status = models.CharField(null=True, default=True, help_text='用户状态信息,用户自定义', max_length=64)
     user_type = models.SmallIntegerField(null=False, choices=user_type_choices, help_text='用户类型', default=1)
     salt = models.CharField(null=True, help_text='盐', max_length=64)
     password = models.CharField(null=True, help_text='用户密码', max_length=128)

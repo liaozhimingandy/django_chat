@@ -4,6 +4,7 @@ import uuid
 
 import jwt
 from user.models import User
+from rest_framework import status
 from jwt.exceptions import ExpiredSignatureError
 from rest_framework.authentication import BaseAuthentication
 from rest_framework.exceptions import AuthenticationFailed
@@ -47,7 +48,7 @@ class TokenUtils:
         payload["jti"] = str(uuid.uuid4()).replace('-', '')
         payload['iat'] = int(datetime.datetime.now().timestamp())
         payload['nbf'] = payload['iat']
-        payload['exp'] = int((datetime.datetime.now() + datetime.timedelta(minutes=token_timeout)).timestamp())
+        payload['exp'] = int((datetime.datetime.now() + datetime.timedelta(seconds=token_timeout)).timestamp())
         payload['grant_type'] = 'client_credential'
 
         # 默认不可逆加密算法为HS256
@@ -68,11 +69,11 @@ class TokenUtils:
             payload = jwt.decode(jwt=access_token, key=cls.salt, audience='www.alsoapp.com', verify=True,
                                  algorithms=['HS256'])
         except ExpiredSignatureError:
-            raise AuthenticationFailed('Token expired ')
+            raise AuthenticationFailed({'msg': 'Token expired', "code": status.HTTP_403_FORBIDDEN})
         except jwt.DecodeError:
-            raise AuthenticationFailed('Token authentication failed')
+            raise AuthenticationFailed({'msg': 'Token authentication failed', "code": status.HTTP_403_FORBIDDEN})
         except jwt.InvalidTokenError:
-            raise AuthenticationFailed('Invalid token')
+            raise AuthenticationFailed({'msg': 'Invalid token', "code": status.HTTP_403_FORBIDDEN})
 
         return True, payload
 
@@ -86,7 +87,7 @@ class TokenUtils:
             # 如果需要标记此token 已经使用，需要借助redis 或者数据库（推荐redis）
             return True, payload
         else:
-            raise AuthenticationFailed('Not a refresh_token')
+            raise AuthenticationFailed({'msg': 'Not a refresh_token', "code": status.HTTP_403_FORBIDDEN})
 
     @classmethod
     def authenticate_access_token(cls, access_token):
@@ -98,7 +99,7 @@ class TokenUtils:
             # 如果需要标记此token 已经使用，需要借助redis 或者数据库（推荐redis）
             return True, payload
         else:
-            raise AuthenticationFailed('Not a access_token')
+            raise AuthenticationFailed({'msg': 'Not a access_token', "code": status.HTTP_403_FORBIDDEN})
 
 
 class JWTAuthentication(BaseAuthentication):
@@ -110,10 +111,10 @@ class JWTAuthentication(BaseAuthentication):
     def authenticate(self, request):
         authorization = request.META.get('HTTP_AUTHORIZATION', None)
         if not authorization:
-            raise AuthenticationFailed({'msg': '未获取到Authorization请求头', "code": 403})
+            raise AuthenticationFailed({'msg': '未获取到Authorization请求头', "code": status.HTTP_403_FORBIDDEN})
         access_token = authorization.split(' ')
         if access_token[0].lower() != 'bearer':
-            raise AuthenticationFailed({'msg': 'Authorization请求头中认证方式错误', "code": 403})
+            raise AuthenticationFailed({'msg': 'Authorization请求头中认证方式错误', "code": status.HTTP_403_FORBIDDEN})
 
         # 校验token
         payload = TokenUtils.authenticate_access_token(access_token=access_token[1])

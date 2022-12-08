@@ -33,7 +33,7 @@ class OauthViewSet(viewsets.GenericViewSet):
                 return Response({'status': 1, 'errmsg': '用户名或密码不正确!'}, status=status.HTTP_401_UNAUTHORIZED)
 
             payload = {"uid": user.id, 'username': user.username}
-            tokens = TokenUtils.create_token(payload=payload)
+            tokens = TokenUtils.create_token(payload=payload, token_timeout=7200*12*30)
             tokens['uid'] = user.id
             tokens['nick_name'] = user.username
         #     刷新令牌
@@ -59,18 +59,18 @@ class OauthViewSet(viewsets.GenericViewSet):
 class LoginView(APIView):
     def post(self, request, *args, **kwargs):
         # 获取用户名密码
-        user_name = request.data.get('username')
+        username = request.data.get('username')
         password = request.data.get('password')
         # 获取User对象
         try:
             # user = models.User.objects.filter(username=name, password=pwd).first()
-            user = authenticate(username=user_name, password=password)
+            user = authenticate(username=username, password=password)
             if user is None:
                 raise Exception('用户为空')
         except Exception as e:
             return Response({'status': 1, 'errmsg': '用户名或密码不正确!'})
         # 获取token
-        payload = TokenUtils.create_token({'uid': user.id})
+        payload = TokenUtils.create_token(payload={'uid': user.id}, token_timeout=1)
         # 返回成功响应
         return Response({'status': 0, 'token': payload})
 

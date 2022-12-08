@@ -10,24 +10,25 @@ from moment.serializers import MomentSerializer
 
 from user.lib.TokenUtil import JWTAuthentication
 
+
 # Create your views here.
 class MomentViewSet(viewsets.ModelViewSet):
     """
     动态视图集
     """
-    queryset = Moment.objects.filter(right_status=0).order_by('-moment_id').all()
+    queryset = Moment.objects.filter(right_status=0).order_by('-mid').all()
     serializer_class = MomentSerializer
 
     # 限流设置
     throttle_classes = (AnonRateThrottle,)
 
     # 使用过滤器, 指定哪个可过滤
-    filter_fields = ['user_name', 'mobile']
+    filter_fields = ['username', 'mobile']
 
     # 指定后端排序
     filter_backends = [OrderingFilter, ]
     # 排序设置
-    ordering_fields = ['moment_id', 'user_name']
+    ordering_fields = ['mid', 'username']
 
     # 权限设置
     # IsAuthenticated: 只有登录才能访问
@@ -59,7 +60,7 @@ class MomentViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'])
     def lasted(self, request):
         """返回最近十条数据"""
-        moments = Moment.objects.order_by('-moment_id')[:10]
+        moments = Moment.objects.order_by('-mid')[:10]
         moments_ser = self.get_serializer(moments, many=True)
 
         # data = {
