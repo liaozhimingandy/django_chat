@@ -30,7 +30,7 @@ class OauthViewSet(viewsets.GenericViewSet):
             # 验证密码
             user = authenticate(username=username, password=password)
             if user is None:
-                return Response({'status': 1, 'errmsg': '用户名或密码不正确!'}, status=status.HTTP_401_UNAUTHORIZED)
+                return Response({'code': 1, 'msg': '用户名或密码不正确!'}, status=status.HTTP_401_UNAUTHORIZED)
 
             payload = {"uid": user.id, 'username': user.username}
             tokens = TokenUtils.create_token(payload=payload, token_timeout=7200*12*30)
