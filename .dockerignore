@@ -1,0 +1,15 @@
+/.dockerignore
+/.gitignore
+/Dockerfile
+/docker-compose.yml
+/venv/*
+/staticfiles/*
+/.git/*
+/static/*
+/.idea/*
+/./assets/*
+/db.sqlite3
+/config/.env
+/config/default_nginx.conf
+/templates/*
+/*/migrations/*
