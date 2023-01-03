@@ -20,8 +20,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-&(s=fs#s3b9&=8&y_+bhzquk_1-uq)iu@=v=%+&qegp9958%e$'
-
+SECRET_KEY = os.getenv(
+    "SECRET_KEY", "django-insecure-&(s=fs#s3b9&=8&y_+bhzquk_1-uq)iu@=v=%+&qegp9958%e$"
+)
 # SECURITY WARNING: don't run with debug turned on in production!
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = int(os.environ.get("DEBUG", default=1))
@@ -181,3 +182,9 @@ AUTH_USER_MODEL = 'user.User'
 DATA_CENTER_ID = 1
 # 服务编号
 WORKER_ID = 1
+
+# 数据库账号密码
+TOKEN_DB_USER = os.getenv("TOKEN_DB_USER", "caradigm")
+TOKEN_DB_NAME = os.getenv("TOKEN_DB_NAME", "mdm")
+TOKEN_DB_PASSWORD = os.getenv("TOKEN_DB_PASSWORD", "Knt2020@lh")
+TOKEN_DB_HOST = os.getenv("TOKEN_DB_HOST", "172.16.33.191")

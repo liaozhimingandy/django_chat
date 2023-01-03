@@ -140,3 +140,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         db_table = 'wl_user'
         verbose_name = '用户信息表'
         verbose_name_plural = verbose_name
+
+    def save(self, *args, **kwargs):
+        self.password = make_password(self.password, None, 'pbkdf2_sha256')
+        super(User, self).save(*args, **kwargs)

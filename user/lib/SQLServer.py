@@ -41,7 +41,7 @@ class SQLServer:
                 result = cur.fetchall()  # fetchall()获取查询结果
                 return result
 
-    def exec_update(self, sql, value):
+    def exec_insert(self, sql, value):
         """
         执行执行语句
         返回一个包含tuple的list，list是元素的记录行，tuple记录每行的字段数值
@@ -49,6 +49,17 @@ class SQLServer:
         with self.pool.connection() as conn:
             with conn.cursor() as cur:
                 cur.execute(sql, value)  # 执行更新语句
+            # 提交事务
+            conn.commit()
+
+    def exec_update(self, sql):
+        """
+        执行执行语句
+        返回一个包含tuple的list，list是元素的记录行，tuple记录每行的字段数值
+        """
+        with self.pool.connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute(sql)  # 执行更新语句
             # 提交事务
             conn.commit()
 
@@ -61,8 +72,7 @@ class SQLServer:
 
 def main():
     msg = SQLServer(server="172.16.33.183", user="sa", password="Knt2020@lh", database="ESB_MSG-B")
-    result = msg.exec_query(
-        "SELECT TOP 1 * FROM MessageTagList")
+    result = msg.exec_query("SELECT TOP 1 * FROM MessageTagList")
     for item in result:
         print(item)
 
