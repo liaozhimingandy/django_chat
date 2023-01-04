@@ -11,7 +11,7 @@ services:
 #    for beta
 #    command: python manage.py runserver 0.0.0.0:8000
     ports:
-      - 8000:8000
+      - "8000:8000"
     env_file:
       - ./config/.env
     environment:
@@ -23,9 +23,10 @@ services:
       depends_on:
         - welink
       image: nginx:1.21.0
+      restart: unless-stopped
       container_name: nginx-welink-pro
       ports:
-        - 80:80
+        - "80:80"
       environment:
         - TZ=Asia/Shanghai
       volumes:

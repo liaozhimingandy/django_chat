@@ -69,7 +69,7 @@ class OauthViewSet(viewsets.GenericViewSet):
 
 class OauthESBViewSet(viewsets.GenericViewSet):
     """
-    http://127.0.0.1:8000/api/oauth/authorize/?client_id=p2pweb&client_secret=fgsdgrf&grant_type=refresh_token&username=zhiming&password=123456
+    示例:http://127.0.0.1:8000/api/oauth/authorize/?client_id=p2pweb&client_secret=fgsdgrf&grant_type=refresh_token&username=zhiming&password=123456
     """
 
     @action(methods=('get',), detail=False)
@@ -100,7 +100,6 @@ class OauthESBViewSet(viewsets.GenericViewSet):
             # 查询系统信息
             sql = f"select top 1 system_code, system_name, software_provider_code, software_provider_name, org_code, org_name " \
                   f"from auth where appid='{user.uid}'"
-            print(sql)
             item = sql_exector.exec_query(sql)[0]
 
             payload = {"uid": user.uid,
