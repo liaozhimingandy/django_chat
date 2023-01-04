@@ -98,23 +98,26 @@ class User(AbstractBaseUser, PermissionsMixin):
         (1, '普通用户'),
     )
     id = models.AutoField(primary_key=True)
-    uid = models.CharField(null=False, unique=True, blank=False, help_text='用户id', max_length=32, default=_uid_default)
-    nick_name = models.CharField(null=True, blank=False, help_text='用户昵称', max_length=64)
-    username = models.CharField(unique=True, null=True, blank=False, help_text='登录名', max_length=64)
-    email = models.CharField(null=True, blank=True, help_text='电子邮箱', max_length=64)
-    mobile = models.CharField(null=True, blank=True, help_text='手机号码', max_length=16)
-    sex = models.SmallIntegerField(null=False, choices=sex_code, help_text='性别', default=0)
-    avatar = models.CharField(null=True, max_length=128, help_text='头像图片')
-    user_status = models.CharField(null=True, default=True, help_text='用户状态信息,用户自定义', max_length=64)
-    user_type = models.SmallIntegerField(null=False, choices=user_type_choices, help_text='用户类型', default=1)
+    uid = models.CharField("用户id", null=False, unique=True, blank=False, help_text='用户id',
+                           max_length=32, default='wlid_'+str(uuid.uuid4()).replace('-', '')[:12])
+    nick_name = models.CharField('用户昵称', null=True, blank=False, help_text='用户昵称', max_length=64)
+    username = models.CharField(unique=True, null=True, blank=False, help_text='登录名', max_length=64, verbose_name="登录名")
+    email = models.CharField(null=True, blank=True, help_text='电子邮箱', max_length=64, verbose_name='电子邮箱')
+    mobile = models.CharField(null=True, blank=True, help_text='手机号码', max_length=16, verbose_name='手机号码')
+    sex = models.SmallIntegerField(null=False, choices=sex_code, help_text='性别', default=0,  verbose_name='性别')
+    avatar = models.CharField(null=True, max_length=128, help_text='头像图片', verbose_name='头像图片')
+    user_status = models.CharField(null=True, default=True, help_text='用户状态信息,用户自定义', max_length=64,
+                                   verbose_name='用户状态信息,用户自定义')
+    user_type = models.SmallIntegerField(null=False, choices=user_type_choices, help_text='用户类型', default=1,
+                                         verbose_name='用户类型')
     salt = models.CharField(null=True, help_text='盐', max_length=64)
-    password = models.CharField(null=True, help_text='用户密码', max_length=128)
-    login_ip = models.GenericIPAddressField(help_text='最后登录ip', default='localhost')
-    last_login = models.DateTimeField(null=False, help_text='最后登录时间', auto_now_add=True)
-    gmt_created = models.DateTimeField(null=False, help_text='创建时间', auto_now_add=True)
+    password = models.CharField(null=True, help_text='用户密码', max_length=128, verbose_name='用户密码')
+    login_ip = models.GenericIPAddressField(help_text='最后登录ip', default='127.0.0.1', verbose_name='最后登录ip')
+    last_login = models.DateTimeField(null=False, help_text='最后登录时间', auto_now_add=True, verbose_name='最后登录时间')
+    gmt_created = models.DateTimeField(null=False, help_text='创建时间', auto_now_add=True, verbose_name='创建时间')
     is_staff = models.BooleanField(_("staff status"),
                                    default=False,
-                                   help_text=_("Designates whether the user can log into this admin site."),
+                                   help_text=_("Designates whether the user can log into this admin site.")
                                    )
     is_active = models.BooleanField(
         _("active"),

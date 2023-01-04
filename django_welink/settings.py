@@ -152,13 +152,15 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend', ],
 
     'DEFAULT_THROTTLE_CLASSES': (  # 定义限流类
-        'rest_framework.throttling.AnonRateThrottle',
-        'rest_framework.throttling.UserRateThrottle'
+        'rest_framework.throttling.AnonRateThrottle',   # 匿名用户限流
+        'rest_framework.throttling.UserRateThrottle',   # 登录用户限流
+        'rest_framework.throttling.ScopedRateThrottle'  # 针对某一个接口限流（只能在APIView类使用）
     ),
-    # 定义限流速率（支持天数/时/分/秒的限制）
+    # 定义限流速率（支持天数/时/分/秒的限制）;`second`, `minute`, `hour` 或`day`来指明周期
     'DEFAULT_THROTTLE_RATES': {
-        'anon': '10/m',
-        'user': '30/m',
+        'anon': '100/day',
+        'user': '500/day',
+        'esb_access_token': "3/minute"
     },
 
     # 异常处理

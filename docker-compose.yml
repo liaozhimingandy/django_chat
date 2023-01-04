@@ -3,9 +3,9 @@ version: '3.7'
 services:
   welink:
     image: liaozhiming/welink:latest
-    container_name: django-welink-pro
-#    for producation
-    command: gunicorn django_welink.wsgi:application --workers 3 --bind :8000
+    container_name: welink-django-pro
+#    for producation,转至配置文件中
+#    command: gunicorn django_welink.wsgi:application --workers 3 --bind :8000
     # 生产环境中请使用自动重启; always
     restart: unless-stopped
 #    for beta
@@ -20,11 +20,9 @@ services:
       - data_static:/opt/app/assets
 
   web:
-      depends_on:
-        - welink
       image: nginx:1.21.0
       restart: unless-stopped
-      container_name: nginx-welink-pro
+      container_name: welink-nginx-pro
       ports:
         - "80:80"
       environment:

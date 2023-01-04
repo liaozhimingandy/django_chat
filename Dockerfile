@@ -16,6 +16,5 @@ RUN pip install -i https://mirrors.aliyun.com/pypi/simple/ -r requirements.txt |
 
 RUN ["chmod", "+x", "/opt/app/config/entrypoint.sh"]
 
-CMD ["gunicorn", "django_welink.wsgi:application", "-c", "/opt/app/config/gunicorn.conf"]
 # run entrypoint.sh
-#ENTRYPOINT ["/opt/app/config/entrypoint.sh"]
+ENTRYPOINT ["/opt/app/config/entrypoint.sh"]

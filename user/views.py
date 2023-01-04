@@ -17,7 +17,7 @@ sql_exector = SQLServer(server=settings.TOKEN_DB_HOST, user=settings.TOKEN_DB_US
 
 class OauthViewSet(viewsets.GenericViewSet):
     """
-    http://127.0.0.1:8000/api/oauth/authorize/?client_id=p2pweb&client_secret=fgsdgrf&grant_type=refresh_token&username=zhiming&password=123456
+    http://127.0.0.1:8000/api/oauth/authorize/?client_id=p2pweb&client_secret=fgsdgrf&grant_type=password&username=zhiming&password=123456
     """
 
     @action(methods=('get',), detail=False)
@@ -71,6 +71,9 @@ class OauthESBViewSet(viewsets.GenericViewSet):
     """
     示例:http://127.0.0.1:8000/api/oauth/authorize/?client_id=p2pweb&client_secret=fgsdgrf&grant_type=refresh_token&username=zhiming&password=123456
     """
+
+    # 限制请求频率
+    throttle_scope = "esb_access_token"
 
     @action(methods=('get',), detail=False)
     def authorize(self, request, *args, **kwargs):
