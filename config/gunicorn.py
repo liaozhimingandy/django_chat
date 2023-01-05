@@ -81,7 +81,7 @@ if not LOG_DIR.exists():
     LOG_DIR.mkdir(parents=True)
 
 # 错误日志输出等级，访问日志的输出等级无法设置
-loglevel = "error"
+loglevel = "info"
 
 # 正常的日志文件路径，'-'表示输出到终端
 accesslog = '-'

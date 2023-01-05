@@ -2,7 +2,7 @@ from rest_framework.decorators import action
 from rest_framework.filters import OrderingFilter
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
-from rest_framework.throttling import AnonRateThrottle
+from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
 
 from moment.models import Moment
 from rest_framework import viewsets, status
@@ -20,7 +20,7 @@ class MomentViewSet(viewsets.ModelViewSet):
     serializer_class = MomentSerializer
 
     # 限流设置
-    throttle_classes = (AnonRateThrottle,)
+    throttle_classes = (UserRateThrottle, AnonRateThrottle)
 
     # 使用过滤器, 指定哪个可过滤
     filter_fields = ['username', 'mobile']
@@ -41,6 +41,7 @@ class MomentViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         moment = request.data
 
+        # 提取请求ip地址
         ip = request.META.get('HTTP_X_FORWARDED_FOR') if 'HTTP_X_FORWARDED_FOR' in request.META \
             else request.META.get('REMOTE_ADDR')
         moment["from_ip"] = ip

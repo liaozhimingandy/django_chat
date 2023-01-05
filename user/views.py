@@ -40,10 +40,10 @@ class OauthViewSet(viewsets.GenericViewSet):
             if user is None:
                 return Response({'code': status.HTTP_401_UNAUTHORIZED, 'msg': '用户名或密码不正确!'}, status=status.HTTP_401_UNAUTHORIZED)
 
-            payload = {"uid": user.id,
+            payload = {"uid": user.uid,
                        'username': user.username}
             tokens = TokenUtils.create_token(payload=payload, token_timeout=7200*12)
-            tokens['uid'] = user.id
+            tokens['uid'] = user.uid
             tokens['nick_name'] = user.username
 
         #     刷新令牌

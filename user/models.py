@@ -11,7 +11,7 @@ from django.utils.translation import gettext_lazy as _
 
 from user.lib import LeafSnowFlake
 
-# 生成序号
+# 生成雪花序号
 leaf_snowflake = LeafSnowFlake.IdWorker(data_center_id=settings.DATA_CENTER_ID, worker_id=settings.DATA_CENTER_ID)
 
 
@@ -32,8 +32,8 @@ class WLUserManager(BaseUserManager):
             self.model._meta.app_label, self.model._meta.object_name
         )
         username = GlobalUserModel.normalize_username(username)
-        user = self.model(username=username, email=email, **extra_fields)
-        user.password = make_password(password)
+        user = self.model(username=username, email=email, password=password,**extra_fields)
+        # user.password = make_password(password) # 保存用户信息时已加密,此处无需加密
         user.save(using=self._db)
         return user
 
@@ -111,7 +111,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     user_type = models.SmallIntegerField(null=False, choices=user_type_choices, help_text='用户类型', default=1,
                                          verbose_name='用户类型')
     salt = models.CharField(null=True, help_text='盐', max_length=64)
-    password = models.CharField(null=True, help_text='用户密码', max_length=128, verbose_name='用户密码')
     login_ip = models.GenericIPAddressField(help_text='最后登录ip', default='127.0.0.1', verbose_name='最后登录ip')
     last_login = models.DateTimeField(null=False, help_text='最后登录时间', auto_now_add=True, verbose_name='最后登录时间')
     gmt_created = models.DateTimeField(null=False, help_text='创建时间', auto_now_add=True, verbose_name='创建时间')
@@ -139,11 +138,11 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     objects = WLUserManager()
 
-    class Meta:
+    class Meta(AbstractBaseUser.Meta):
         db_table = 'wl_user'
         verbose_name = '用户信息表'
         verbose_name_plural = verbose_name
-
+    
     def save(self, *args, **kwargs):
-        self.password = make_password(self.password, None, 'pbkdf2_sha256')
+        self.password = make_password(password=self.password, salt=None, hasher='pbkdf2_sha256')
         super(User, self).save(*args, **kwargs)

@@ -120,5 +120,5 @@ class JWTAuthentication(BaseAuthentication):
         payload = TokenUtils.authenticate_access_token(access_token=access_token[1])
 
         # 从用户表获取用户
-        user = User.objects.filter(id=payload[1].get('uid', None)).first()
+        user = User.objects.filter(uid=payload[1].get('uid', None)).first()
         return user, None
