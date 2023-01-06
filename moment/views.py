@@ -1,3 +1,5 @@
+import json
+
 from rest_framework.decorators import action
 from rest_framework.filters import OrderingFilter
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
@@ -99,7 +101,6 @@ class ImageViewSet(viewsets.GenericViewSet):
             return Response(status=status.HTTP_201_CREATED, data=img_url)
         # 未知错误，报服务器内部错误
         except Exception as error:
-            print(error)
-            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR, data={"detail": "服务器内部错误"})
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR, data={"detail": str(error)})
 
 
