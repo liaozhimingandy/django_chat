@@ -1,4 +1,4 @@
-"""django_welink URL Configuration
+"""dj_api_luohu URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/4.1/topics/http/urls/
@@ -14,22 +14,14 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, re_path, include
+from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from django.conf.urls.static import static
-from django.conf import settings
 
-from moment import urls as moment_urls
-from user import urls as user_urls
+from moment.views import MomentViewSet, ImageViewSet
 
-from user.views import OauthESBViewSet
+# api根路由
+router = DefaultRouter()
+router.register('moments', MomentViewSet, basename="moment")  # 向路由器中注册视图集,"user":浏览器访问的路径，basename:路由别名
+router.register('image', ImageViewSet, basename="upload_images")
 
-urlpatterns = [
-    path('admin/', admin.site.urls),
-    re_path('^api/moment/', include((moment_urls, 'moment'))),
-    re_path('^api/user/', include((user_urls, 'user'))),
-    re_path('^api/esb/oauth/authorize/', OauthESBViewSet.as_view({"get": "authorize"})),  # 临时使用
-]
-
-# 拼接文件查看路径,用于查看图片
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+urlpatterns = router.urls

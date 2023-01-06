@@ -17,7 +17,7 @@ sql_exector = SQLServer(server=settings.TOKEN_DB_HOST, user=settings.TOKEN_DB_US
 
 class OauthViewSet(viewsets.GenericViewSet):
     """
-    http://127.0.0.1:8000/api/oauth/authorize/?client_id=p2pweb&client_secret=fgsdgrf&grant_type=password&username=zhiming&password=123456
+    示例: http://127.0.0.1:8000/api/user/oauth/authorize/?client_id=p2pweb&client_secret=fgsdgrf&grant_type=password&username=zhiming&password=123456
     """
 
     @action(methods=('get',), detail=False)
@@ -29,6 +29,11 @@ class OauthViewSet(viewsets.GenericViewSet):
         client_id = request.GET.get('client_id', None)
         # 客户端秘钥
         client_secret = request.GET.get('client_secret', None)
+
+        # 判断授权方式
+        if grant_type not in ('password', 'refresh_token'):
+            return Response(data={'code': 403, 'msg': '不支持的授权方式'}, status=status.HTTP_403_FORBIDDEN)
+
         # 走密码方式授权获取token
         if grant_type == 'password':
             # 用户名

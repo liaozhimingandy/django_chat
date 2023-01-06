@@ -20,3 +20,19 @@ class MomentSerializer(serializers.ModelSerializer):
 
     def get_username(self, obj):
         return User.objects.get(uid=obj.uid).username
+
+
+class ImageUploadSerializer(serializers.Serializer):
+    """
+    图片上传
+    """
+    image = serializers.ImageField(label="图片", max_length=128, use_url=True, error_messages={
+            'invalid': '图片参数错误'
+        })
+
+    def create(self, validated_data):
+        pass
+
+    def update(self, instance, validated_data):
+        pass
+

@@ -110,7 +110,6 @@ class User(AbstractBaseUser, PermissionsMixin):
                                    verbose_name='用户状态信息,用户自定义')
     user_type = models.SmallIntegerField(null=False, choices=user_type_choices, help_text='用户类型', default=1,
                                          verbose_name='用户类型')
-    salt = models.CharField(null=True, help_text='盐', max_length=64)
     login_ip = models.GenericIPAddressField(help_text='最后登录ip', default='127.0.0.1', verbose_name='最后登录ip')
     last_login = models.DateTimeField(null=False, help_text='最后登录时间', auto_now_add=True, verbose_name='最后登录时间')
     gmt_created = models.DateTimeField(null=False, help_text='创建时间', auto_now_add=True, verbose_name='创建时间')

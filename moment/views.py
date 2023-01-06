@@ -4,9 +4,10 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
 
+from moment.lib import utils
 from moment.models import Moment
 from rest_framework import viewsets, status
-from moment.serializers import MomentSerializer
+from moment.serializers import MomentSerializer, ImageUploadSerializer
 
 from user.lib.TokenUtil import JWTAuthentication
 
@@ -72,3 +73,33 @@ class MomentViewSet(viewsets.ModelViewSet):
         #     "data": moments_ser.data
         # }
         return Response(moments_ser.data, status=status.HTTP_200_OK)
+
+
+class ImageViewSet(viewsets.GenericViewSet):
+
+    serializer_class = ImageUploadSerializer
+
+    @action(detail=False, methods=['post'], url_path="upload")
+    def upload(self, request, pk=None):
+        """
+        图片上传接口
+        :param request: 图片路径
+        :return:
+        """
+        try:
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+
+            image = serializer.validated_data['image']
+            img_file = "image"  # 图片存储的文件夹
+
+            img_name = utils.save_img(image, img_file)
+            img_url = utils.get_img_url(request, img_file, img_name)
+
+            return Response(status=status.HTTP_201_CREATED, data=img_url)
+        # 未知错误，报服务器内部错误
+        except Exception as error:
+            print(error)
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR, data={"detail": "服务器内部错误"})
+
+
