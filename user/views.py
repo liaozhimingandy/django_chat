@@ -158,7 +158,6 @@ class OauthESBViewSet(viewsets.GenericViewSet):
             "%Y-%m-%d %H:%M:%S")
 
         sql_update = f"update auth set token='{tokens['access_token']}', gmt_exp='{gmt_exp}', gmt_iat='{gmt_iat}' where appid='{tokens['uid']}'"
-        print(sql_update)
         sql_exector.exec_update(sql_update)
 
         return Response(tokens)
