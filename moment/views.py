@@ -91,13 +91,12 @@ class ImageViewSet(viewsets.GenericViewSet):
         try:
             serializer = self.get_serializer(data=request.data)
             serializer.is_valid(raise_exception=True)
-
             image = serializer.validated_data['image']
             img_file = "image"  # 图片存储的文件夹
 
             img_name = utils.save_img(image, img_file)
             img_url = utils.get_img_url(request, img_file, img_name)
-
+            print(img_url)
             return Response(status=status.HTTP_201_CREATED, data=img_url)
         # 未知错误，报服务器内部错误
         except Exception as error:
