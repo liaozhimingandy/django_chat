@@ -59,7 +59,7 @@ class TokenUtils:
         payload['grant_type'] = 'refresh_token'
         refresh = jwt.encode(headers=cls.header, payload=payload, key=cls.salt)
         return {"access_token": token, "refresh_token": refresh, "expires_in": token_timeout, "token_type": "bearer",
-                "scop": "read"}
+                "scop": "all"}
 
     @classmethod
     def authenticate_token(cls, access_token):

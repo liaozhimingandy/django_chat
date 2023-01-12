@@ -29,6 +29,7 @@ urlpatterns = [
     re_path('^api/moment/', include((moment_urls, 'moment'))),
     re_path('^api/user/', include((user_urls, 'user'))),
     re_path('^api/esb/oauth/authorize/', OauthESBViewSet.as_view({"get": "authorize"})),  # 临时使用
+    re_path('^api/esb/oauth/refresh-token/', OauthESBViewSet.as_view({"get": "authorize"})),  # 临时使用
 ]
 
 # 拼接文件查看路径,用于查看图片
