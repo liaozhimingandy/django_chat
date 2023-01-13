@@ -22,14 +22,19 @@ from django.conf import settings
 from moment import urls as moment_urls
 from user import urls as user_urls
 
-from user.views import OauthESBViewSet
+from user.views import OauthESBViewSet, OauthViewSet
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    re_path('^api/moment/', include((moment_urls, 'moment'))),
-    re_path('^api/user/', include((user_urls, 'user'))),
-    re_path('^api/esb/oauth/authorize/', OauthESBViewSet.as_view({"get": "authorize"})),  # 临时使用
-    re_path('^api/esb/oauth/refresh-token/', OauthESBViewSet.as_view({"get": "authorize"})),  # 临时使用
+    path('admin/', admin.site.urls, name="admin"),
+    re_path('^api/moment/', include((moment_urls, 'moment'), namespace='moment')),
+    re_path('^api/user/', include((user_urls, 'user'), namespace='user')),
+    re_path('^api/esb/oauth/authorize/', OauthESBViewSet.as_view({"get": "authorize"}), name="authorize"),  # 临时使用
+    re_path('^api/esb/oauth/refresh-token/', OauthESBViewSet.as_view({"get": "authorize"}), name="refresh-token"),
+    # 临时使用
+    path('api/oauth/authorize/<str:client_id>/<str:client_secret>/<str:username>/<str:password>/<str:grant_type>/',
+         OauthViewSet.as_view({"get": "authorize"}), name="authorize-v2"),  # 临时使用
+    path('api/oauth/refresh-token/<str:client_id>/<str:client_secret>/<str:grant_type>/',
+         OauthViewSet.as_view({"get": "refresh_token"}), name="refresh-token-v2"),  # 临时使用
 ]
 
 # 拼接文件查看路径,用于查看图片

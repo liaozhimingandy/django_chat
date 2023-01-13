@@ -1,4 +1,6 @@
 from rest_framework import serializers
+
+from moment.lib import utils
 from moment.models import Moment
 from user.models import User
 
@@ -30,8 +32,9 @@ class ImageUploadSerializer(serializers.Serializer):
             'invalid': '图片参数错误'
         })
 
-    def create(self, validated_data):
-        pass
+    def create(self, validated_data,  dir_image='image', *args, **kwargs):
+        image = validated_data['image']
+        return utils.save_img(image, dir_image)
 
     def update(self, instance, validated_data):
         pass
