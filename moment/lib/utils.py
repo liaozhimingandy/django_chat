@@ -42,9 +42,9 @@ def get_img_url(request, img_file, img_name):
     else:
         protocol = 'http'
     # 传回给后端ImageField要存储的图片路径
-    backend_relative_path = img_file + '/' + datetime.datetime.now().strftime(
+    backend_relative_path = settings.MEDIA_URL + img_file + '/' + datetime.datetime.now().strftime(
         "%Y") + '/' + datetime.datetime.now().strftime("%m") + '/' + img_name
-    relative_path = settings.MEDIA_URL + backend_relative_path
+    relative_path = backend_relative_path
     # 前端显示需要的图片路径
     frontend_url = protocol + '://' + str(request.META['HTTP_HOST']) + relative_path
     return {"url": frontend_url, "backend_path": backend_relative_path}

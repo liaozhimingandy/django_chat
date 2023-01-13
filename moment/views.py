@@ -1,6 +1,5 @@
-import json
-
-from rest_framework.decorators import action
+from django.urls import reverse
+from rest_framework.decorators import action, api_view
 from rest_framework.filters import OrderingFilter
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
@@ -91,15 +90,23 @@ class ImageViewSet(viewsets.GenericViewSet):
         try:
             serializer = self.get_serializer(data=request.data)
             serializer.is_valid(raise_exception=True)
-            image = serializer.validated_data['image']
             img_file = "image"  # 图片存储的文件夹
 
-            img_name = utils.save_img(image, img_file)
+            # img_name = utils.save_img(image, img_file)
+            img_name = serializer.save(dir_image=img_file)
             img_url = utils.get_img_url(request, img_file, img_name)
-            print(img_url)
             return Response(status=status.HTTP_201_CREATED, data=img_url)
         # 未知错误，报服务器内部错误
         except Exception as error:
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR, data={"detail": str(error)})
+
+
+@api_view(['GET'])
+def test(request):
+    data = {
+        "test": reverse("moment:test"),
+        "refresh-token": reverse("refresh-token"),
+    }
+    return Response(data=data, status=status.HTTP_200_OK)
 
 
