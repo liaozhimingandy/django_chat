@@ -1,3 +1,4 @@
+from django.conf import settings
 from rest_framework import serializers
 
 from moment.lib import utils
@@ -7,21 +8,27 @@ from user.models import User
 
 class MomentSerializer(serializers.ModelSerializer):
     # 补充数据库不存在的字段
-    nick_name = serializers.SerializerMethodField(label='用户昵称')
-    username = serializers.SerializerMethodField(label='用户名称', method_name='get_username')
+    # nick_name = serializers.SerializerMethodField(label='用户昵称')
+    # username = serializers.SerializerMethodField(label='用户名称', method_name='get_username')
 
     class Meta:
         model = Moment
-        # fields = '__all__'
+        fields = '__all__'
         # exclude = ['poi', '']
-        fields = ['nick_name', 'username'] + [item.name for item in Moment._meta.fields]
+        # fields = ['nick_name', 'username'] + [item.name for item in Moment._meta.fields]
 
-    def get_nick_name(self, obj):
-        # game_name = models.Games.objects.get(uuid=obj.game_uuid).name
-        return User.objects.get(uid=obj.uid).nick_name
-
-    def get_username(self, obj):
-        return User.objects.get(uid=obj.uid).username
+    def to_representation(self, instance):
+        """自定义返回之前处理逻辑"""
+        data = super().to_representation(instance)
+        if data['images']:
+            new_images = [settings.MEDIA_DOMAIN_URL+item for item in data['images']]
+            data['images'] = new_images
+        # 补充额外字段
+        # 采用此方式,避免多次查询数据库
+        user = User.objects.get(uid=instance.uid)
+        data['nick_name'] = user.nick_name
+        data['username'] = user.username
+        return data
 
 
 class ImageUploadSerializer(serializers.Serializer):

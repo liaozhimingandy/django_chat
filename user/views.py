@@ -17,11 +17,13 @@ sql_exector = SQLServer(server=settings.TOKEN_DB_HOST, user=settings.TOKEN_DB_US
 
 class OauthViewSet(viewsets.GenericViewSet):
     """
-    示例: http://127.0.0.1:8000/api/user/oauth/authorize/?client_id=p2pweb&client_secret=fgsdgrf&grant_type=password&username=zhiming&password=123456
+    示例: http://127.0.0.1:8000/api/v2/user/oauth/authorize/p2pweb/fgsdgrf/zhiming/123456/password/
     """
 
-    @action(methods=('get',), detail=False)
-    def authorize(self, request, username, password, grant_type, client_id=None, client_secret=None, *args, **kwargs):
+    @action(methods=('get',), detail=False, url_path=r'authorize/(?P<client_id>\w+)/(?P<client_secret>\w+)/('
+                                                     r'?P<username>\w+)/(?P<password>\w+)/(?P<grant_type>\w+)',
+            name='authorize')
+    def authorize(self, request, username, password, grant_type, client_id=None, client_secret=None):
         """
         走密码方式授权获取token
         :param client_secret: 客户端秘钥
@@ -30,9 +32,7 @@ class OauthViewSet(viewsets.GenericViewSet):
         :param password: 资源拥有者密码
         :param username: 资源拥有者用户名
         :param request:
-        :param args:
-        :param kwargs:
-        :return:
+        :return: token内容
         """
         # 判断授权方式
         if grant_type not in ('password', ):
@@ -50,17 +50,16 @@ class OauthViewSet(viewsets.GenericViewSet):
 
         return Response(tokens)
 
-    @action(methods=('get',), detail=False, url_path="refresh-token")
-    def refresh_token(self, request, grant_type, client_id=None, client_secret=None, *args, **kwargs):
+    @action(methods=('get',), detail=False, url_path=r"refresh-token/(?P<client_id>\w+)/(?P<client_secret>\w+)/("
+                                                     r"?P<grant_type>\w+)", name='refresh-token')
+    def refresh_token(self, request, grant_type, client_id=None, client_secret=None):
         """
         通过刷新令牌来更新请求token
         :param client_secret: 客户端秘钥
         :param client_id: 客户端接入标识
         :param grant_type: 授权类型
         :param request:
-        :param args:
-        :param kwargs:
-        :return:
+        :return: token内容
         """
         tokens = None
         # 判断授权方式
@@ -187,9 +186,9 @@ class OauthESBV2ViewSet(viewsets.GenericViewSet):
     """
 
     # 限制请求频率
-    # throttle_scope = "esb_access_token"
+    throttle_scope = "esb_access_token"
 
-    @action(methods=('get',), detail=False)
+    @action(methods=('get',), detail=False, url_path='authorize')
     def authorize(self, request, username, password, grant_type, client_id=None, client_secret=None, *args, **kwargs):
         """
         走密码方式授权获取token

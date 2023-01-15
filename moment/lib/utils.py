@@ -47,4 +47,4 @@ def get_img_url(request, img_file, img_name):
     relative_path = backend_relative_path
     # 前端显示需要的图片路径
     frontend_url = protocol + '://' + str(request.META['HTTP_HOST']) + relative_path
-    return {"url": frontend_url, "backend_path": backend_relative_path}
+    return {"url": frontend_url, "image_path": backend_relative_path}

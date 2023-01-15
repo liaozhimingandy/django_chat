@@ -123,6 +123,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 # 多媒体文件
+MEDIA_DOMAIN_URL = os.getenv("MEDIA_DOMAIN_URL", "http://127.0.0.1:8000")
 MEDIA_URL = 'media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, MEDIA_URL)
 
@@ -152,8 +153,8 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend', ],
 
     'DEFAULT_THROTTLE_CLASSES': (  # 定义限流类
-        'rest_framework.throttling.AnonRateThrottle',   # 匿名用户限流
-        'rest_framework.throttling.UserRateThrottle',   # 登录用户限流
+        'rest_framework.throttling.AnonRateThrottle',  # 匿名用户限流
+        'rest_framework.throttling.UserRateThrottle',  # 登录用户限流
         'rest_framework.throttling.ScopedRateThrottle'  # 针对某一个接口限流（只能在APIView类使用）
     ),
     # 定义限流速率（支持天数/时/分/秒的限制）;`second`, `minute`, `hour` 或`day`来指明周期

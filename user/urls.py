@@ -1,13 +1,13 @@
+from django.urls import path
 from rest_framework.routers import DefaultRouter
 
 from user.views import OauthViewSet
-
-# urlpatterns = [
-#     # re_path('^oauth/authorize/', OauthViewSet.as_view({"get": "authorize"})),
-# ]
-
 # url 命令空间
 app_name = 'user'
+# urlpatterns = [
+#     path('oauth/authorize/<str:client_id>/<str:client_secret>/<str:username>/<str:password>/<str'
+#          ':grant_type>/', OauthViewSet.as_view({"get": "authorize"})),
+# ]
 
 # api根路由
 router = DefaultRouter()
