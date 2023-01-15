@@ -4,21 +4,33 @@ import time
 from django.contrib.auth import authenticate
 from django.conf import settings
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
+from rest_framework.throttling import ScopedRateThrottle, UserRateThrottle
 from rest_framework.views import APIView
 from rest_framework import viewsets, status
 
 from user.lib.SQLServer import SQLServer
-from user.lib.TokenUtil import TokenUtils
+from user.lib.TokenUtil import TokenUtils, JWTAuthentication
 
 sql_exector = SQLServer(server=settings.TOKEN_DB_HOST, user=settings.TOKEN_DB_USER, password=settings.TOKEN_DB_PASSWORD,
                         database=settings.TOKEN_DB_NAME)
+
+
+class AccessUserRateThrottle(UserRateThrottle):
+    scope = 'rate_access_token'
+
+
+class RefreshUserRateThrottle(UserRateThrottle):
+    scope = 'rate_refresh_token'
 
 
 class OauthViewSet(viewsets.GenericViewSet):
     """
     示例: http://127.0.0.1:8000/api/v2/user/oauth/authorize/p2pweb/fgsdgrf/zhiming/123456/password/
     """
+    # authentication_classes = []
+    permission_classes = [IsAuthenticatedOrReadOnly, ]
 
     @action(methods=('get',), detail=False, url_path=r'authorize/(?P<client_id>\w+)/(?P<client_secret>\w+)/('
                                                      r'?P<username>\w+)/(?P<password>\w+)/(?P<grant_type>\w+)',
@@ -35,16 +47,23 @@ class OauthViewSet(viewsets.GenericViewSet):
         :return: token内容
         """
         # 判断授权方式
-        if grant_type not in ('password', ):
+        if not grant_type == 'password':
             return Response(data={'code': 403, 'msg': '不支持的授权方式'}, status=status.HTTP_403_FORBIDDEN)
         # 验证密码
         user = authenticate(username=username, password=password)
         if user is None:
-            return Response({'code': status.HTTP_401_UNAUTHORIZED, 'msg': '用户名或密码不正确!'}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({'code': status.HTTP_401_UNAUTHORIZED, 'msg': '用户名或密码不正确!'},
+                            status=status.HTTP_401_UNAUTHORIZED)
 
+        # 获取用户ip
+        ip = request.META.get('HTTP_X_FORWARDED_FOR') if 'HTTP_X_FORWARDED_FOR' in request.META \
+            else request.META.get('REMOTE_ADDR')
         payload = {"uid": user.uid,
-                   'username': user.username}
-        tokens = TokenUtils.create_token(payload=payload, token_timeout=7200*12)
+                   'username': user.username,
+                   "ip": ip
+                   }
+        tokens = TokenUtils.create_token(payload=payload, token_timeout=settings.TOKEN_TIMEOUT_ACCESS,
+                                         refresh_timeout=settings.TOKEN_TIMEOUT_REFRESH)
         tokens['uid'] = user.uid
         tokens['nick_name'] = user.username
 
@@ -65,24 +84,44 @@ class OauthViewSet(viewsets.GenericViewSet):
         # 判断授权方式
         if grant_type not in ('refresh_token',):
             return Response(data={'code': 403, 'msg': '不支持的授权方式'}, status=status.HTTP_403_FORBIDDEN)
-
         authorization = request.META.get('HTTP_AUTHORIZATION', None)
         if authorization is None:
             return Response(data={"msg": "缺失token"}, status=status.HTTP_401_UNAUTHORIZED)
-
         refresh_token = authorization.split(' ')
         valid_refresh_token = TokenUtils.authenticate_refresh_token(refresh_token=refresh_token[1])
+        # 获取token中的ip
+        token_ip = valid_refresh_token[1].get('ip', None)
+        # 获取用户ip
+        ip = request.META.get('HTTP_X_FORWARDED_FOR') if 'HTTP_X_FORWARDED_FOR' in request.META \
+            else request.META.get('REMOTE_ADDR')
 
-        if valid_refresh_token[0]:
-            payload = {"uid": valid_refresh_token[1].get('uid', None),
-                       'username': valid_refresh_token[1].get('username', None)
-                       }
-            tokens = TokenUtils.create_token(payload=payload)
-            tokens['uid'] = valid_refresh_token[1].get('uid', None)
-            tokens['nick_name'] = valid_refresh_token[1].get('username', None)
-            del tokens['refresh_token']
+        # 判断请求ip是否和token终端ip一致
+        if not ip == token_ip:
+            return Response(data={"code": status.HTTP_403_FORBIDDEN, "msg": "请求的ip和token终端ip不一致"},
+                            status=status.HTTP_403_FORBIDDEN)
+
+        tokens = TokenUtils.create_token(payload=valid_refresh_token[1], token_timeout=settings.TOKEN_TIMEOUT_ACCESS,
+                                         refresh_timeout=settings.TOKEN_TIMEOUT_REFRESH)
+        tokens['uid'] = request.user.uid
+        tokens['nick_name'] = request.user.username
+        # 保留双token
+        # del tokens['refresh_token']
 
         return Response(tokens)
+
+    def get_throttles(self):
+        if self.action == "authorize":
+            throttle_classes = [AccessUserRateThrottle, ]
+        else:
+            throttle_classes = [RefreshUserRateThrottle, ]
+        return [throttle() for throttle in throttle_classes]
+
+    def get_authenticate_header(self, request):
+        if self.action == "authorize":
+            authentication_classes = []
+        else:
+            authentication_classes = [JWTAuthentication, ]
+        return [authentication() for authentication in authentication_classes]
 
 
 class OauthESBViewSet(viewsets.GenericViewSet):
@@ -92,6 +131,8 @@ class OauthESBViewSet(viewsets.GenericViewSet):
 
     # 限制请求频率
     throttle_scope = "esb_access_token"
+    authentication_classes = []
+    permission_classes = [IsAuthenticatedOrReadOnly, ]
 
     @action(methods=('get',), detail=False)
     def authorize(self, request, *args, **kwargs):
@@ -116,7 +157,8 @@ class OauthESBViewSet(viewsets.GenericViewSet):
             # 验证密码
             user = authenticate(username=username, password=password)
             if user is None:
-                return Response({'code': status.HTTP_401_UNAUTHORIZED, 'msg': '用户名或密码不正确!'}, status=status.HTTP_401_UNAUTHORIZED)
+                return Response({'code': status.HTTP_401_UNAUTHORIZED, 'msg': '用户名或密码不正确!'},
+                                status=status.HTTP_401_UNAUTHORIZED)
 
             # 查询系统信息
             sql = f"select top 1 system_code, system_name, software_provider_code, software_provider_name, org_code, org_name " \
@@ -164,7 +206,7 @@ class OauthESBViewSet(viewsets.GenericViewSet):
                            "org_code": item[4],
                            "org_name": item[5]
                            }
-                tokens = TokenUtils.create_token(payload=payload, token_timeout=7200*12)
+                tokens = TokenUtils.create_token(payload=payload, token_timeout=7200 * 12)
                 tokens['uid'] = valid_refresh_token[1].get('uid', None)
                 tokens['nick_name'] = valid_refresh_token[1].get('username', None)
                 del tokens['refresh_token']
@@ -187,6 +229,8 @@ class OauthESBV2ViewSet(viewsets.GenericViewSet):
 
     # 限制请求频率
     throttle_scope = "esb_access_token"
+    authentication_classes = []
+    permission_classes = [IsAuthenticatedOrReadOnly, ]
 
     @action(methods=('get',), detail=False, url_path='authorize')
     def authorize(self, request, username, password, grant_type, client_id=None, client_secret=None, *args, **kwargs):
@@ -198,12 +242,10 @@ class OauthESBV2ViewSet(viewsets.GenericViewSet):
         :param password: 资源拥有者密码
         :param username: 资源拥有者用户名
         :param request:
-        :param args:
-        :param kwargs:
         :return:
         """
         # 判断授权方式
-        if grant_type not in ('password', ):
+        if grant_type not in ('password',):
             return Response(data={'code': 403, 'msg': '不支持的授权方式'}, status=status.HTTP_403_FORBIDDEN)
         # 验证密码
         user = authenticate(username=username, password=password)
@@ -216,6 +258,9 @@ class OauthESBV2ViewSet(viewsets.GenericViewSet):
               f"from auth where appid='{user.uid}'"
 
         item = sql_exector.exec_query(sql)[0]
+        # 获取用户ip
+        ip = request.META.get('HTTP_X_FORWARDED_FOR') if 'HTTP_X_FORWARDED_FOR' in request.META \
+            else request.META.get('REMOTE_ADDR')
 
         payload = {"uid": user.uid,
                    'username': user.username,
@@ -224,9 +269,11 @@ class OauthESBV2ViewSet(viewsets.GenericViewSet):
                    "software_provider_code": item[2],
                    "software_provider_name": item[3],
                    "org_code": item[4],
-                   "org_name": item[5]
+                   "org_name": item[5],
+                   "ip": ip
                    }
-        tokens = TokenUtils.create_token(payload=payload, token_timeout=7200 * 12)
+        tokens = TokenUtils.create_token(payload=payload, token_timeout=settings.TOKEN_TIMEOUT_ACCESS,
+                                             refresh_timeout=settings.TOKEN_TIMEOUT_REFRESH)
         tokens['uid'] = user.uid
         tokens['nick_name'] = user.username
 
@@ -248,8 +295,6 @@ class OauthESBV2ViewSet(viewsets.GenericViewSet):
         :param client_id: 客户端接入标识
         :param grant_type: 授权类型
         :param request:
-        :param args:
-        :param kwargs:
         :return:
         """
         # 授权类型
@@ -265,36 +310,28 @@ class OauthESBV2ViewSet(viewsets.GenericViewSet):
         refresh_token = authorization.split(' ')
         valid_refresh_token = TokenUtils.authenticate_refresh_token(refresh_token=refresh_token[1])
 
-        if valid_refresh_token[0]:
-            # 查询系统信息
-            sql = f"select top 1 system_code, system_name, software_provider_code, software_provider_name, org_code, org_name " \
-                  f"from auth where appid='{valid_refresh_token[1].get('uid', None)}'"
-            result = sql_exector.exec_query(sql)
-            if not result:
-                return Response(data={"msg": "签名正确,缺失用户信息"}, status=status.HTTP_403_FORBIDDEN)
-            item = result[0]
+        # 获取token中的ip
+        token_ip = valid_refresh_token[1].get('ip', None)
+        # 获取用户ip
+        ip = request.META.get('HTTP_X_FORWARDED_FOR') if 'HTTP_X_FORWARDED_FOR' in request.META \
+            else request.META.get('REMOTE_ADDR')
+        if not ip == token_ip:
+            return Response(data={"code": status.HTTP_403_FORBIDDEN, "msg": "请求的ip和token终端ip不一致"},
+                            status=status.HTTP_403_FORBIDDEN)
 
-            payload = {"uid": valid_refresh_token[1].get('uid', None),
-                       'username': valid_refresh_token[1].get('username', None),
-                       "system_code": item[0],
-                       "system_name": item[1],
-                       "software_provider_code": item[2],
-                       "software_provider_name": item[3],
-                       "org_code": item[4],
-                       "org_name": item[5]
-                       }
-            tokens = TokenUtils.create_token(payload=payload)
-            tokens['uid'] = valid_refresh_token[1].get('uid', None)
-            tokens['nick_name'] = valid_refresh_token[1].get('username', None)
-            del tokens['refresh_token']
+        tokens = TokenUtils.create_token(payload=valid_refresh_token[1], token_timeout=settings.TOKEN_TIMEOUT_ACCESS,
+                                         refresh_timeout=settings.TOKEN_TIMEOUT_REFRESH)
 
-            # 保存到数据库
-            gmt_iat = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-            gmt_exp = (datetime.datetime.now() + datetime.timedelta(seconds=7200 * 12)).strftime(
-                "%Y-%m-%d %H:%M:%S")
+        tokens['uid'] = request.user.uid
+        tokens['nick_name'] = request.user.username
 
-            sql_update = f"update auth set token='{tokens['access_token']}', gmt_exp='{gmt_exp}', gmt_iat='{gmt_iat}' where appid='{tokens['uid']}'"
-            sql_exector.exec_update(sql_update)
+        # 保存到数据库
+        gmt_iat = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+        gmt_exp = (datetime.datetime.now() + datetime.timedelta(seconds=7200 * 12)).strftime(
+            "%Y-%m-%d %H:%M:%S")
+
+        sql_update = f"update auth set token='{tokens['access_token']}', gmt_exp='{gmt_exp}', gmt_iat='{gmt_iat}' where appid='{tokens['uid']}'"
+        sql_exector.exec_update(sql_update)
 
         return Response(tokens)
 

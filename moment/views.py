@@ -1,4 +1,5 @@
 from django.urls import reverse
+from rest_framework.authentication import BasicAuthentication
 from rest_framework.decorators import action, api_view
 from rest_framework.filters import OrderingFilter
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
@@ -32,13 +33,12 @@ class MomentViewSet(viewsets.ModelViewSet):
     # 排序设置
     ordering_fields = ['mid', 'username']
 
+    # 通过Authorization请求头传递token
+    authentication_classes = [BasicAuthentication, JWTAuthentication]
     # 权限设置
     # IsAuthenticated: 只有登录才能访问
     # IsAuthenticatedOrReadOnly: 认证用户可读可写，未认证用户可读
     permission_classes = [IsAuthenticatedOrReadOnly, ]
-
-    # 通过Authorization请求头传递token
-    authentication_classes = [JWTAuthentication, ]
 
     def create(self, request, *args, **kwargs):
         moment = request.data

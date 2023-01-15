@@ -22,7 +22,7 @@ class TokenUtils:
     salt = os.getenv("SECRET_KEY", "django-insecure-^xs70#xch%!em*b#%)jp!$&69m=ttoek&6_@cm-sgj%7ia!r80")
 
     @classmethod
-    def create_token(cls, payload, token_timeout=7200, refresh_timeout=30):
+    def create_token(cls, payload, token_timeout=7200, refresh_timeout=3600*12*30):
         """创建token"""
         # 盐salt
         # 业务数据 payload
@@ -55,7 +55,7 @@ class TokenUtils:
         token = jwt.encode(headers=cls.header, payload=payload, key=cls.salt, algorithm='HS256')
 
         # 得到refesh
-        payload['exp'] = int((datetime.datetime.utcnow() + datetime.timedelta(days=refresh_timeout)).timestamp())
+        payload['exp'] = int((datetime.datetime.utcnow() + datetime.timedelta(seconds=refresh_timeout)).timestamp())
         payload['grant_type'] = 'refresh_token'
         refresh = jwt.encode(headers=cls.header, payload=payload, key=cls.salt)
         return {"access_token": token, "refresh_token": refresh, "expires_in": token_timeout, "token_type": "bearer",
@@ -91,7 +91,7 @@ class TokenUtils:
 
     @classmethod
     def authenticate_access_token(cls, access_token):
-        """校验refresh"""
+        """校验access"""
         payload = cls.authenticate_token(access_token=access_token)[1]
 
         # 校验token 是否有效，以及是否是refresh token，验证通过后生成新的token 以及 refresh_token
@@ -116,8 +116,8 @@ class JWTAuthentication(BaseAuthentication):
         if access_token[0].lower() != 'bearer':
             raise AuthenticationFailed({'msg': 'Authorization请求头中认证方式错误', "code": status.HTTP_403_FORBIDDEN})
 
-        # 校验token
-        payload = TokenUtils.authenticate_access_token(access_token=access_token[1])
+        # 校验token,包括access_token和refresh_token
+        payload = TokenUtils.authenticate_token(access_token=access_token[1])
 
         # 从用户表获取用户
         user = User.objects.filter(uid=payload[1].get('uid', None)).first()

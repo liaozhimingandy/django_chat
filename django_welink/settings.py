@@ -161,7 +161,8 @@ REST_FRAMEWORK = {
     'DEFAULT_THROTTLE_RATES': {
         'anon': '100/day',
         'user': '500/day',
-        'esb_access_token': "3/minute"
+        'rate_access_token': "20/hour",
+        'rate_refresh_token': "10/day"
     },
 
     # 异常处理
@@ -170,9 +171,9 @@ REST_FRAMEWORK = {
     # 定义认证配置
     'DEFAULT_AUTHENTICATION_CLASSES': (
         # 'rest_framework_simplejwt.authentication.JWTAuthentication',  # jwt认证
-        # 'user.utils.JWTAuthentication',
         'rest_framework.authentication.BasicAuthentication',  # 基本认证
         'rest_framework.authentication.SessionAuthentication',  # session认证
+        'user.lib.TokenUtil.JWTAuthentication',  # token全局认证
     ),
     # 默认权限设置
     'DEFAULT_PERMISSION_CLASSES': (
@@ -193,3 +194,6 @@ TOKEN_DB_USER = os.getenv("TOKEN_DB_USER", "caradigm")
 TOKEN_DB_NAME = os.getenv("TOKEN_DB_NAME", "mdm")
 TOKEN_DB_PASSWORD = os.getenv("TOKEN_DB_PASSWORD", "Knt2020@lh")
 TOKEN_DB_HOST = os.getenv("TOKEN_DB_HOST", "172.16.33.191")
+# token有效时长,单位为秒
+TOKEN_TIMEOUT_ACCESS = 3600 * 2
+TOKEN_TIMEOUT_REFRESH = 3600 * 24 * 7
