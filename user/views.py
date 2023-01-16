@@ -12,6 +12,7 @@ from rest_framework import viewsets, status
 
 from user.lib.SQLServer import SQLServer
 from user.lib.TokenUtil import TokenUtils, JWTAuthentication
+from user.models import User
 
 sql_exector = SQLServer(server=settings.TOKEN_DB_HOST, user=settings.TOKEN_DB_USER, password=settings.TOKEN_DB_PASSWORD,
                         database=settings.TOKEN_DB_NAME)
@@ -29,7 +30,7 @@ class OauthViewSet(viewsets.GenericViewSet):
     """
     示例: http://127.0.0.1:8000/api/v2/user/oauth/authorize/p2pweb/fgsdgrf/zhiming/123456/password/
     """
-    # authentication_classes = []
+    authentication_classes = []
     permission_classes = [IsAuthenticatedOrReadOnly, ]
 
     @action(methods=('get',), detail=False, url_path=r'authorize/(?P<client_id>\w+)/(?P<client_secret>\w+)/('
@@ -65,7 +66,8 @@ class OauthViewSet(viewsets.GenericViewSet):
         tokens = TokenUtils.create_token(payload=payload, token_timeout=settings.TOKEN_TIMEOUT_ACCESS,
                                          refresh_timeout=settings.TOKEN_TIMEOUT_REFRESH)
         tokens['uid'] = user.uid
-        tokens['nick_name'] = user.username
+        tokens['nick_name'] = user.nick_name
+        tokens['username'] = user.username
 
         return Response(tokens)
 
@@ -102,8 +104,11 @@ class OauthViewSet(viewsets.GenericViewSet):
 
         tokens = TokenUtils.create_token(payload=valid_refresh_token[1], token_timeout=settings.TOKEN_TIMEOUT_ACCESS,
                                          refresh_timeout=settings.TOKEN_TIMEOUT_REFRESH)
-        tokens['uid'] = request.user.uid
-        tokens['nick_name'] = request.user.username
+        # 从用户表获取用户
+        user = User.objects.filter(uid=valid_refresh_token[1].get('uid', None)).first()
+        tokens['uid'] = user.uid
+        tokens['nick_name'] = user.nick_name
+        tokens['username'] = user.username
         # 保留双token
         # del tokens['refresh_token']
 
@@ -115,13 +120,6 @@ class OauthViewSet(viewsets.GenericViewSet):
         else:
             throttle_classes = [RefreshUserRateThrottle, ]
         return [throttle() for throttle in throttle_classes]
-
-    def get_authenticate_header(self, request):
-        if self.action == "authorize":
-            authentication_classes = []
-        else:
-            authentication_classes = [JWTAuthentication, ]
-        return [authentication() for authentication in authentication_classes]
 
 
 class OauthESBViewSet(viewsets.GenericViewSet):
@@ -322,8 +320,10 @@ class OauthESBV2ViewSet(viewsets.GenericViewSet):
         tokens = TokenUtils.create_token(payload=valid_refresh_token[1], token_timeout=settings.TOKEN_TIMEOUT_ACCESS,
                                          refresh_timeout=settings.TOKEN_TIMEOUT_REFRESH)
 
-        tokens['uid'] = request.user.uid
-        tokens['nick_name'] = request.user.username
+        # 从用户表获取用户
+        user = User.objects.filter(uid=valid_refresh_token[1].get('uid', None)).first()
+        tokens['uid'] = user.uid
+        tokens['nick_name'] = user.username
 
         # 保存到数据库
         gmt_iat = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())

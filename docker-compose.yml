@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   welink:
-    image: liaozhiming/welink:v230109
+    image: liaozhiming/welink:v230116
     container_name: welink-django-pro
 #    for producation,转至配置文件中
 #    command: gunicorn django_welink.wsgi:application --workers 3 --bind :8000

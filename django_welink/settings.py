@@ -139,8 +139,10 @@ CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_WHITELIST = (
     'http://127.0.0.1:8080',
     'http://localhost:8080',
-    'https://alsoappwelinkapi.kele.plus',
-    'http://alsoappwelinkapi.kele.plus',
+    'https://alsoapp.gnway.cc',
+    'http://alsoapp.gnway.cc',
+    'http://welink.alsoapp.com',
+    'https://welink.alsoapp.com',
     # 这里需要注意： 1. 必须添加http://否则报错（https未测试） 2. 此地址就是允许跨域的地址，即前端地址
 )
 
@@ -160,7 +162,8 @@ REST_FRAMEWORK = {
     # 定义限流速率（支持天数/时/分/秒的限制）;`second`, `minute`, `hour` 或`day`来指明周期
     'DEFAULT_THROTTLE_RATES': {
         'anon': '100/day',
-        'user': '500/day',
+        'user': '2000/day',
+        "esb_access_token": "5/hour",
         'rate_access_token': "20/hour",
         'rate_refresh_token': "10/day"
     },

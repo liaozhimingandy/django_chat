@@ -111,10 +111,10 @@ class JWTAuthentication(BaseAuthentication):
     def authenticate(self, request):
         authorization = request.META.get('HTTP_AUTHORIZATION', None)
         if not authorization:
-            raise AuthenticationFailed({'msg': '未获取到Authorization请求头', "code": status.HTTP_403_FORBIDDEN})
+            raise AuthenticationFailed({'msg': '未获取到Authorization请求头', "code": status.HTTP_401_UNAUTHORIZED})
         access_token = authorization.split(' ')
         if access_token[0].lower() != 'bearer':
-            raise AuthenticationFailed({'msg': 'Authorization请求头中认证方式错误', "code": status.HTTP_403_FORBIDDEN})
+            raise AuthenticationFailed({'msg': 'Authorization请求头中认证方式错误', "code": status.HTTP_401_UNAUTHORIZED})
 
         # 校验token,包括access_token和refresh_token
         payload = TokenUtils.authenticate_token(access_token=access_token[1])
