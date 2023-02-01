@@ -123,7 +123,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 # 多媒体文件
-MEDIA_DOMAIN_URL = os.getenv("MEDIA_DOMAIN_URL", "http://127.0.0.1:8000")
+MEDIA_DOMAIN_URL = os.getenv("MEDIA_DOMAIN_URL", "http://alsoapp.gnway.cc")
 MEDIA_URL = 'media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, MEDIA_URL)
 
