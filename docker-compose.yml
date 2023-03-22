@@ -2,11 +2,11 @@ version: '3.7'
 
 services:
   app:
-    image: liaozhiming/welink:v230116
+    image: ${IMAGE}
     hostname: app
 #    for producation,转至配置文件中
 #    command: gunicorn django_welink.wsgi:application --workers 3 --bind :8000
-    command: gunicorn django_welink.wsgi:application -c /opt/app/config/gunicorn.py
+    command: ${COMMAND}
 
 #    for beta
 #    command: python manage.py runserver 0.0.0.0:80
@@ -17,7 +17,7 @@ services:
     # ports:
     #   - "8000:8000"
     env_file:
-      - ./config/.env
+      - .env
     environment:
       - TZ=Asia/Shanghai
     volumes:
