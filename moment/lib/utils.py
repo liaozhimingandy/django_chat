@@ -1,10 +1,11 @@
-import random
+import hashlib
 import os
 import datetime
 import uuid
 from pathlib import Path
 
 from django.conf import settings
+from django.core.files import File
 
 
 # 接收并保存图片
@@ -48,3 +49,28 @@ def get_img_url(request, img_file, img_name):
     # 前端显示需要的图片路径
     frontend_url = protocol + '://' + str(request.META['HTTP_HOST']) + relative_path
     return {"url": frontend_url, "image_path": backend_relative_path}
+
+
+def get_uploaded_file_md5(inmemory_file) -> str:
+    """
+    计算内存文件md5值
+    :param inmemory_file: 内存文件对象
+    :return: md5值
+    """
+    # 将InMemoryUploadedFile转换为File类型
+    file = File(inmemory_file)
+
+    # 计算文件的MD5值
+    md5 = hashlib.md5()
+    for chunk in file.chunks():
+        md5.update(chunk)
+
+    return md5.hexdigest()
+
+
+def split_file_type(file):
+    """
+    对文件名切割，获取名字和类型
+    """
+    file_li = os.path.splitext(file)
+    return file_li[0], file_li[1]

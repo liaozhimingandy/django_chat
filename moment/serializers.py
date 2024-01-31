@@ -1,9 +1,15 @@
+import os
+import uuid
+from copy import deepcopy
+
+import minio
 from django.conf import settings
+from minio.error import NoSuchKey
 from rest_framework import serializers
 
 from moment.lib import utils
-from moment.models import Moment
-from user.models import User
+from moment.lib.utils import get_uploaded_file_md5
+from moment.models import Moment, Image
 
 
 class MomentSerializer(serializers.ModelSerializer):
@@ -14,7 +20,7 @@ class MomentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Moment
         fields = '__all__'
-        # exclude = ['poi', '']
+        # exclude = ['from_ip', ]
         # fields = ['nick_name', 'username'] + [item.name for item in Moment._meta.fields]
 
     def to_representation(self, instance):
@@ -25,24 +31,19 @@ class MomentSerializer(serializers.ModelSerializer):
             data['images'] = new_images
         # 补充额外字段
         # 采用此方式,避免多次查询数据库
-        user = User.objects.get(uid=instance.uid)
-        data['nick_name'] = user.nick_name
-        data['username'] = user.username
+        # user = User.objects.get(uid=instance.uid)
+        # data['nick_name'] = user.nick_name
+        # data['username'] = user.username
         return data
 
 
-class ImageUploadSerializer(serializers.Serializer):
+class ImageUploadSerializer(serializers.ModelSerializer):
     """
-    图片上传
+    图片上传接口
     """
-    image = serializers.ImageField(label="图片", max_length=128, use_url=True, error_messages={
-            'invalid': '图片参数错误'
-        })
+    class Meta:
+        model = Image
+        fields = '__all__'
 
-    def create(self, validated_data,  dir_image='image', *args, **kwargs):
-        image = validated_data['image']
-        return utils.save_img(image, dir_image)
 
-    def update(self, instance, validated_data):
-        pass
 
