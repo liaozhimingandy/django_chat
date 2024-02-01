@@ -62,9 +62,8 @@ class MinioStorage(Storage):
         # name = name.replace('\\', '/')
         path_dir = os.path.split(name)[0]
         name = f'{path_dir}/{uuid.uuid4()}{os.path.splitext(name)[1]}'
-        # ret = go_upload_file(BytesIO(content.read()), bucket=img_bucket, path_name=name)
         result = go_upload_file_have_size(BytesIO(content.read()), content.size, bucket=self.bucket, path_name=name)
-        assert result[0] != 0, 'file upload failed'
+        assert result[0] != 0, f'file upload failed! error: {result[1]}'
         self.image_md5 = result[0]
         return name
 

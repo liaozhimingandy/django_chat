@@ -28,7 +28,7 @@ def get_file_size(file):
 
 def go_upload_file(file, bucket='images', path_name=''):
     """
-    上传文件
+    上传文件,自动计算文件大小
     """
     try:
         # print(path_name)
@@ -47,9 +47,9 @@ def go_upload_file_have_size(file, size, bucket='images', path_name=''):
     """
     try:
         result = client.put_object(bucket_name=bucket, object_name=path_name, data=file, length=size)
-        return result
-    except(Exception, ) as e:
-        return 0, None
+        return result.etag, result.bucket_name
+    except (Exception, ) as e:
+        return 0, str(e)
 
 
 def go_delete_file(bucket='media', path_name=''):
@@ -71,8 +71,7 @@ def go_delete_file_list(bucket='media', path_name_list=[]):
     未实现，据说需要删除完遍历结果
     """
     try:
-        ret = client.remove_objects(bucket, path_name_list)
-        print(ret)
+        result = client.remove_objects(bucket, path_name_list)
         return 1
     except Exception as e:
         print(e)

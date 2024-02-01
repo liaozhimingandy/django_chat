@@ -12,5 +12,7 @@
 /config/.env
 /config/default_nginx.conf
 /config/default_nginx_ssl.conf
-/templates/*
 /*/migrations/*
+/_pycache_/*
+/readme.md
+/docker_build_auto.*

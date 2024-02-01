@@ -1,19 +1,14 @@
 from copy import deepcopy
 
-from django.http import QueryDict
+from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.urls import reverse
-from rest_framework.authentication import BasicAuthentication
+from rest_framework import viewsets, status
 from rest_framework.decorators import action, api_view
-from rest_framework.filters import OrderingFilter
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
 
-from django_welink import settings
-from moment.lib import utils
 from moment.lib.utils import get_uploaded_file_md5
 from moment.models import Moment, Image
-from rest_framework import viewsets, status
 from moment.serializers import MomentSerializer, ImageUploadSerializer
 
 
@@ -69,12 +64,12 @@ class ImageViewSet(viewsets.GenericViewSet):
         """
         图片上传接口
         :param request: 图片路径
-        :return:
+        :return: 图片模型对象
         """
         data = request.data
 
         # 获取图片md5
-        image_copy = deepcopy(data['image'])
+        image_copy = deepcopy(data['image']) if isinstance(data['image'], (InMemoryUploadedFile, )) else data['image']
         image_md5 = get_uploaded_file_md5(image_copy)
         del image_copy
 
@@ -87,7 +82,9 @@ class ImageViewSet(viewsets.GenericViewSet):
             data['image_md5'] = image_md5
             serializer = self.get_serializer(data=data)
             serializer.is_valid(raise_exception=True)
+
             serializer.save()
+
             return Response(status=status.HTTP_201_CREATED, data=serializer.data)
         # 未知错误，报服务器内部错误
         except (Exception, ) as error:

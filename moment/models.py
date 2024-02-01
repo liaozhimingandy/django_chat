@@ -14,15 +14,17 @@ class Moment(models.Model):
         IOS = (3, "IPHONE")
         UNKNOWN = (9, "未知")
 
+    class ContentClassChoice(models.IntegerChoices):
+        TextElem = (1, "普通")
+
     content = models.CharField(null=True, blank=True, help_text="动态内容", max_length=1024, db_comment='动态内容',
                                db_default='')
     user_id = models.CharField(db_default='', help_text="所属用户id", max_length=32, db_comment='所属用户id')
-    location = models.CharField(null=True, blank=True, db_default='', help_text="位置", max_length=128,
-                                db_comment="位置")
+    location = models.CharField(null=True, blank=True, db_default='', help_text="位置", max_length=128, db_comment="位置")
     from_ip = models.GenericIPAddressField(help_text="来源ip", db_comment="来源ip")
     liked = models.PositiveIntegerField(default=0, help_text='赞数', db_comment="赞数")
     content_class = models.PositiveSmallIntegerField(help_text='内容类型', default=1, null=False, blank=True,
-                                                     db_comment="内容类型")
+                                                     db_comment="内容类型", choices=ContentClassChoice)
     from_device = models.PositiveSmallIntegerField(choices=FromDeviceChoice, help_text='来源设备名称',
                                                    db_comment='来源设备名称')
     right_status = models.PositiveSmallIntegerField(help_text='权限状态', default=1, db_comment="权限状态",
@@ -47,7 +49,7 @@ class Moment(models.Model):
 class Image(models.Model):
     image_name = models.CharField('图片名称', null=True, db_comment='图片名称', db_default='', max_length=128)
     image = models.ImageField("图片", upload_to='images')
-    image_md5 = models.CharField('图片md值', db_default='', max_length=32, db_comment="图片md值", unique=True)
+    image_md5 = models.CharField('图片md值', db_default='', max_length=32, db_comment="图片md值", unique=True, null=True)
     gmt_created = models.DateTimeField('记录日期', auto_now_add=True, db_default=now())
 
     class Meta:

@@ -23,6 +23,7 @@ from moment import urls as moment_urls
 
 
 urlpatterns = [
+    path('admin/doc/', include('django.contrib.admindocs.urls')),
     path('admin/', admin.site.urls, name="admin"),
     re_path('^api/moment/', include((moment_urls, 'moment'), namespace='moment')),
 

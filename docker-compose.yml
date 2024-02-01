@@ -1,9 +1,8 @@
 version: '3.7'
 
 services:
-  app:
-    image: ${IMAGE}
-    hostname: app
+  chatapp:
+    image: ${APP_IMAGE}
 #    for producation,转至配置文件中
 #    command: gunicorn django_welink.wsgi:application --workers 3 --bind :8000
     command: ${COMMAND}
@@ -21,14 +20,13 @@ services:
     environment:
       - TZ=Asia/Shanghai
     volumes:
-      - data_static:/opt/app/assets
+      - data_static:/opt/app/static
 
   web:
       image: nginx:1.21.0
       restart: unless-stopped
-      hostname: web
       links:
-        - app
+        - chatapp:app
       ports:
         - "8000:80"
       environment:

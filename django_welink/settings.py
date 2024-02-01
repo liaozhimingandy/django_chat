@@ -30,11 +30,16 @@ SECRET_KEY = os.getenv(
 )
 
 # 应用版本号
-VERSION = (1, 0, 2, "alpha", 3)
-__version__ = get_version(VERSION)
-APP_COMMIT_HASH = subprocess.check_output(["git", "rev-parse", '--short', "HEAD"]).decode('UTF8').strip()
-APP_BRANCH = subprocess.check_output(["git", "rev-parse", "--abbrev-ref", "HEAD"]).decode('UTF8').strip()
-APP_ENV = '生产环境' if int(os.environ.get("DEBUG", default=0)) else '非生产环境'
+# VERSION = (1, 0, 2, "alpha", 3)
+# __version__ = get_version(VERSION)
+__version__ = os.getenv('APP_VERSION', '1.0')
+APP_COMMIT_HASH = os.getenv('APP_COMMIT_HASH', '')
+if not APP_COMMIT_HASH:
+    APP_COMMIT_HASH = subprocess.check_output(["git", "rev-parse", '--short', "HEAD"]).decode('UTF8').strip()
+APP_BRANCH = os.getenv('APP_BRANCH', '')
+if not APP_BRANCH:
+    APP_BRANCH = subprocess.check_output(["git", "rev-parse", "--abbrev-ref", "HEAD"]).decode('UTF8').strip()
+APP_ENV = 'Production' if int(os.environ.get("DEBUG", default=0)) else 'Develop'
 APP_VERSION_VERBOSE = f"{__version__}({APP_ENV}•{APP_BRANCH}•{APP_COMMIT_HASH})"
 print(f"version information: {APP_VERSION_VERBOSE}")
 
@@ -54,6 +59,7 @@ DJANGO_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     "django.contrib.sites",  # 站点使用
+    "django.contrib.admindocs"
 ]
 # 第三方app
 THIRD_PARTY_APPS = [
@@ -205,12 +211,14 @@ REST_FRAMEWORK = {
 # 站点
 SITE_ID = os.getenv('APP_SITE_ID', 2024)
 
+##########################################################################################
 # MinIO服务器地址及认证信息
 MINIO_ACCESS_KEY = os.getenv('APP_MINIO_ACCESS_KEY', 'chat')
 MINIO_SECRET_KEY = os.getenv('APP_MINIO_SECRET_KEY', 'chat1234')
 MINIO_SCHEMA = os.getenv('APP_MINIO_SCHEMA', 'http://')
 MINIO_ENDPOINT = os.getenv('APP_MINIO_ENDPOINT', '172.16.33.188:10005')  # MinIO服务器地址
-MINIO_BUCKET = os.getenv('APP_MINIO_BUCKET', 'chat')
+MINIO_BUCKET = os.getenv('APP_MINIO_BUCKET', 'chatapp')
 
 # 设置文件默认存储
 DEFAULT_FILE_STORAGE = 'moment.MyStorage.MinioStorage'
+##########################################################################################

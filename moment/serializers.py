@@ -1,14 +1,6 @@
-import os
-import uuid
-from copy import deepcopy
-
-import minio
 from django.conf import settings
-from minio.error import NoSuchKey
-from rest_framework import serializers
 
-from moment.lib import utils
-from moment.lib.utils import get_uploaded_file_md5
+from rest_framework import serializers
 from moment.models import Moment, Image
 
 
