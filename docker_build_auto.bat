@@ -20,8 +20,8 @@ rem 提取年月信息
 set year=%Today:~0,4%
 set month=%Today:~4,2%
 
-echo APP_VERSION = %year%.%month% >> .env
-echo APP_IMAGE = chatapp:%year%.%month% >> .env
+echo APP_VERSION = %year%%month% >> .env
+echo APP_IMAGE = chatapp:%year%%month% >> .env
 
 rem build image for docker use git hash
-docker build -t chatapp:%year%.%month% .
+docker build -t chatapp:%year%%month% .

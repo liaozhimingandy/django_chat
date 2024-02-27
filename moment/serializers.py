@@ -1,4 +1,4 @@
-from django.conf import settings
+from django_welink import settings
 
 from rest_framework import serializers
 from moment.models import Moment, Image
@@ -18,9 +18,9 @@ class MomentSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         """自定义返回之前处理逻辑"""
         data = super().to_representation(instance)
-        if data['images']:
-            new_images = [settings.MEDIA_DOMAIN_URL+item for item in data['images']]
-            data['images'] = new_images
+        # if data['images']:
+        #     # new_images = [settings.MEDIA_DOMAIN_URL+item for item in data['images']]
+        #     data['images'] = new_images
         # 补充额外字段
         # 采用此方式,避免多次查询数据库
         # user = User.objects.get(uid=instance.uid)

@@ -1,13 +1,12 @@
-from django.urls import path
 from rest_framework.routers import DefaultRouter
 
-from moment.views import MomentViewSet, ImageViewSet, test
+from moment.views import MomentViewSet, ImageViewSet
 
 # url 命令空间
 app_name = 'moment'
 
 urlpatterns = [
-    path("test/", test, name='test')
+
 ]
 
 # api根路由

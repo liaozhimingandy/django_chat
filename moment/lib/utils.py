@@ -1,6 +1,6 @@
 import hashlib
 import os
-import datetime
+from datetime import datetime
 import uuid
 from pathlib import Path
 
@@ -14,10 +14,10 @@ def save_img(image, dest_father_dir):
     img_dir1 = os.path.join(settings.MEDIA_ROOT, dest_father_dir)
     if not os.path.exists(img_dir1):
         os.makedirs(img_dir1)
-    img_dir2 = os.path.join(img_dir1, datetime.datetime.now().strftime("%Y"))
+    img_dir2 = os.path.join(img_dir1, datetime.now().strftime("%Y"))
     if not os.path.exists(img_dir2):
         os.makedirs(img_dir2)
-    img_file = os.path.join(img_dir2, datetime.datetime.now().strftime("%m"))
+    img_file = os.path.join(img_dir2, datetime.now().strftime("%m"))
     if not os.path.exists(img_file):
         os.makedirs(img_file)
 
@@ -43,8 +43,8 @@ def get_img_url(request, img_file, img_name):
     else:
         protocol = 'http'
     # 传回给后端ImageField要存储的图片路径
-    backend_relative_path = settings.MEDIA_URL + img_file + '/' + datetime.datetime.now().strftime(
-        "%Y") + '/' + datetime.datetime.now().strftime("%m") + '/' + img_name
+    backend_relative_path = settings.MEDIA_URL + img_file + '/' + datetime.now().strftime(
+        "%Y") + '/' + datetime.now().strftime("%m") + '/' + img_name
     relative_path = backend_relative_path
     # 前端显示需要的图片路径
     frontend_url = protocol + '://' + str(request.META['HTTP_HOST']) + relative_path

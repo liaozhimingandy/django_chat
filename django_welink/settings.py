@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """
 Django settings for django_welink project.
 
@@ -39,9 +41,8 @@ if not APP_COMMIT_HASH:
 APP_BRANCH = os.getenv('APP_BRANCH', '')
 if not APP_BRANCH:
     APP_BRANCH = subprocess.check_output(["git", "rev-parse", "--abbrev-ref", "HEAD"]).decode('UTF8').strip()
-APP_ENV = 'Production' if int(os.environ.get("DEBUG", default=0)) else 'Develop'
-APP_VERSION_VERBOSE = f"{__version__}({APP_ENV}•{APP_BRANCH}•{APP_COMMIT_HASH})"
-print(f"version information: {APP_VERSION_VERBOSE}")
+APP_ENV = 'Production' if not int(os.environ.get("APP_DEBUG", default=0)) else 'Develop'
+APP_VERSION_VERBOSE = f"{__version__}({APP_ENV}|{APP_BRANCH}|{APP_COMMIT_HASH})"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = int(os.environ.get("APP_DEBUG", default=1))
@@ -66,11 +67,14 @@ THIRD_PARTY_APPS = [
     'rest_framework',
     'corsheaders',  # 添加：跨域组件
     'django_filters',
+    'drf_spectacular',
+    'drf_spectacular_sidecar', # 生成openapi接口文档; https://drf-spectacular.readthedocs.io/en/latest/readme.html#customization-by-using-extend-schema
 ]
 
 # 本地app
 LOCAL_APPS = [
     "moment",
+    "oauth"
     # Your stuff: custom apps go here
 ]
 
@@ -173,8 +177,10 @@ CORS_ORIGIN_WHITELIST = (
     # 这里需要注意： 1. 必须添加http://否则报错（https未测试） 2. 此地址就是允许跨域的地址，即前端地址
 )
 
+##########################################################################################
 # drestf 设置
 REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     # 分页设置
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
@@ -197,17 +203,37 @@ REST_FRAMEWORK = {
 
     # 定义认证配置
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        # 'rest_framework_simplejwt.authentication.JWTAuthentication',  # jwt认证
         'rest_framework.authentication.BasicAuthentication',  # 基本认证
         'rest_framework.authentication.SessionAuthentication',  # session认证
-        # 'user.lib.TokenUtil.JWTAuthentication',  # token全局认证
+        # 'oauth.authentication.JWTAuthentication',  # jwt认证
     ),
     # 默认权限设置
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.AllowAny',
     )
 }
+##########################################################################################
 
+# drf_spectacular设置: 参考链接: https://drf-spectacular.readthedocs.io/en/latest/settings.html
+
+##########################################################################################
+SPECTACULAR_SETTINGS = {
+    'SWAGGER_UI_DIST': 'SIDECAR',
+    "SWAGGER_UI_FAVICON_HREF": "SIDECAR",
+    'REDOC_DIST': 'SIDECAR',
+    'TITLE': 'openapi接口文档',
+    'DESCRIPTION': '接口文档',
+    'VERSION': '24.2.1',
+    'SERVERS': [{"url": "https://openapi.alsoapp.com/api/", "description": "生产环境"}],
+    'CONTACT': {"name": "liaozhiming",
+                "url": "https://www.alsoapp.com",
+                "email": "liaozhimingandy@qq.com", },
+    'LICENSE': {
+        "name": "Apache 2.0",
+        "url": "https://www.apache.org/licenses/LICENSE-2.0.html",
+    }
+}
+##########################################################################################
 # 站点
 SITE_ID = os.getenv('APP_SITE_ID', 2024)
 

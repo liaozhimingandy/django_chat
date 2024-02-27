@@ -1,7 +1,10 @@
+import time
 from copy import deepcopy
 
 from django.core.files.uploadedfile import InMemoryUploadedFile
+from django.http import JsonResponse
 from django.urls import reverse
+from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets, status
 from rest_framework.decorators import action, api_view
 from rest_framework.response import Response
@@ -13,6 +16,7 @@ from moment.serializers import MomentSerializer, ImageUploadSerializer
 
 
 # Create your views here.
+@extend_schema(tags=["moment"], exclude=True)
 class MomentViewSet(viewsets.ModelViewSet):
     """
     动态相关接口
@@ -55,21 +59,23 @@ class MomentViewSet(viewsets.ModelViewSet):
         return Response(moments_ser.data, status=status.HTTP_200_OK)
 
 
+@extend_schema(tags=["image"], summary="图片操作", exclude=True)
 class ImageViewSet(viewsets.GenericViewSet):
-
     serializer_class = ImageUploadSerializer
 
     @action(detail=False, methods=['post'], url_path="upload")
     def upload(self, request):
         """
-        图片上传接口
-        :param request: 图片路径
-        :return: 图片模型对象
+
+        图片上传接口<br>
+
+        :param request: 图片路径<br>
+        :return: 图片模型对象<br>
         """
         data = request.data
 
         # 获取图片md5
-        image_copy = deepcopy(data['image']) if isinstance(data['image'], (InMemoryUploadedFile, )) else data['image']
+        image_copy = deepcopy(data['image']) if isinstance(data['image'], (InMemoryUploadedFile,)) else data['image']
         image_md5 = get_uploaded_file_md5(image_copy)
         del image_copy
 
@@ -87,15 +93,22 @@ class ImageViewSet(viewsets.GenericViewSet):
 
             return Response(status=status.HTTP_201_CREATED, data=serializer.data)
         # 未知错误，报服务器内部错误
-        except (Exception, ) as error:
+        except (Exception,) as error:
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR, data={"detail": str(error)})
 
 
+@extend_schema(summary="测试接口")
 @api_view(['GET'])
 def test(request):
+    """
+
+     简易测试接口
+
+    :param request: <br>
+    :return: <br>
+    """
     data = {
-        "test": reverse("moment:test"),
-        "refresh-token": reverse("refresh-token"),
+        "message": "hello word!"
     }
     return Response(data=data, status=status.HTTP_200_OK)
 
