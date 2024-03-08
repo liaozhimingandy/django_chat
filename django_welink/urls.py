@@ -27,13 +27,12 @@ urlpatterns = [
     path("test/", test, name='test'),
     path('admin/doc/', include('django.contrib.admindocs.urls')),
     path('admin/', admin.site.urls, name="admin"),
-    re_path('^api/moment/', include((moment_urls, 'moment'), namespace='moment')),
-    re_path('^api/oauth/', include((oauth_urls, 'oauth'), namespace='oauth')),
-
-    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    re_path('^moment/', include((moment_urls, 'moment'), namespace='moment')),
+    re_path('^oauth/', include((oauth_urls, 'oauth'), namespace='oauth')),
+    path('schema/', SpectacularAPIView.as_view(), name='schema'),
     # Optional UI:
-    path('api/doc/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),  # swagger接口文档
-    path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),  # redoc接口文档
+    path('doc/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),  # swagger接口文档
+    path('redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),  # redoc接口文档
 
 ]
 

@@ -8,22 +8,23 @@ from rest_framework.decorators import api_view, authentication_classes
 from rest_framework.response import Response
 
 from oauth.authentication import JWTAuthentication
-from oauth.common.token import verify_jwt_token, generate_jwt_token
+from oauth.common.token import generate_jwt_token
 from oauth.models import App
+from oauth.serializer import AuthorizeTokenSerializer, RefreshTokenSerializer
 
 
 # Create your views here.
-@extend_schema(summary="登录认证", tags=["auth"])
+@extend_schema(summary="登录认证", tags=["oauth"], responses={200: AuthorizeTokenSerializer})
 @api_view(http_method_names=['GET'])
 def authorize(request, app_id: UUID, app_secret: str, grant_type: str = "client_credential"):
     """
 
     用户进行认证获取刷新令牌
 
-    :param request:
+    :param request:<br>
     :param app_id: 应用唯一标识 <br>
     :param app_secret: 应用密钥 <br>
-    :param grant_type: 固定值: client_credentials <br>
+    :param grant_type: 固定值: client_credential <br>
     :return: 令牌信息或报错信息
     """
     try:
@@ -47,7 +48,7 @@ def authorize(request, app_id: UUID, app_secret: str, grant_type: str = "client_
     return Response(data=token_access, status=status.HTTP_200_OK)
 
 
-@extend_schema(summary="获取权限令牌", tags=["auth"])
+@extend_schema(summary="获取权限令牌", tags=["oauth"], responses={200: RefreshTokenSerializer})
 @api_view(http_method_names=['GET'])
 @authentication_classes([JWTAuthentication])
 def refresh_token(request, app_id: UUID, grant_type: str = "refresh_token"):
@@ -84,9 +85,9 @@ def refresh_token(request, app_id: UUID, grant_type: str = "refresh_token"):
 
     return Response(data=token_access, status=status.HTTP_200_OK)
 
-@extend_schema(summary="使用令牌请求测试", tags=["auth"])
+@extend_schema(summary="使用令牌请求测试", tags=["oauth"], responses={200: {"message": "hello word"}})
 @api_view(http_method_names=['GET'])
 @authentication_classes([JWTAuthentication])
 def test_oauth(request):
-    """"""
+    """测试接口"""
     return Response({"message": "hello word"})

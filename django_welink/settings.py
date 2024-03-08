@@ -221,10 +221,13 @@ SPECTACULAR_SETTINGS = {
     'SWAGGER_UI_DIST': 'SIDECAR',
     "SWAGGER_UI_FAVICON_HREF": "SIDECAR",
     'REDOC_DIST': 'SIDECAR',
-    'TITLE': 'openapi接口文档',
+    'TITLE': '医院信息平台交互规范-认证接口文档',
     'DESCRIPTION': '接口文档',
     'VERSION': '24.2.1',
-    'SERVERS': [{"url": "https://openapi.alsoapp.com/api/", "description": "生产环境"}],
+    'SERVERS': [
+        {"url": "http://openapi.esb.alsoapp.com/", "description": "生产环境"},
+        {"url": "http://openapi-test.esb.alsoapp.com/", "description": "测试环境"}
+    ],
     'CONTACT': {"name": "liaozhiming",
                 "url": "https://www.alsoapp.com",
                 "email": "liaozhimingandy@qq.com", },
