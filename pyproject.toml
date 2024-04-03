@@ -1,0 +1,34 @@
+[project]
+name = "django_welink"
+version = "0.1.0"
+description = "welink app"
+authors = [
+    {name = "liaozhiming", email = "liaozhimingandy@qq.com"},
+]
+dependencies = [
+    "django>=5.0.3",
+    "djangorestframework>=3.15.1",
+    "gunicorn>=21.2.0",
+    "docutils>=0.20.1",
+    "django-cors-headers>=4.3.1",
+    "drf-spectacular[sidecar]>=0.27.1",
+    "django-filter>=24.1",
+    "Pillow>=10.2.0",
+    "psycopg2-binary>=2.9.9",
+    "pyjwt>=2.8.0",
+]
+requires-python = ">=3.10"
+readme = "README.md"
+license = {text = "Apache-2.0"}
+
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+
+[tool.pdm]
+distribution = true
+
+[tool.pdm.dev-dependencies]
+dev = [
+]

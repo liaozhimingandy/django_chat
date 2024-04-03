@@ -20,4 +20,4 @@ class ImageAdmin(admin.ModelAdmin):
     list_display = ["id", 'image_name', "image_md5", 'gmt_created']
 
 
-admin.AdminSite.site_header = format(f'后台管理{settings.APP_VERSION_VERBOSE}')
+admin.AdminSite.site_header = format(f'后台管理|{settings.APP_COMMIT_HASH}')

@@ -16,7 +16,7 @@ class OauthTestCase(TestCase):
         """
         Test that we can authenticate with app_id and app_secret
         """
-        result = self.client.get(f"/api/oauth/authorize/{self.app_id}/{self.app_secret}/client_credential/", follow=True)
+        result = self.client.get(f"/oauth/authorize/{self.app_id}/{self.app_secret}/client_credential/", follow=True)
 
         self.assertEqual(result.status_code, 200)
 
@@ -29,12 +29,12 @@ class OauthTestCase(TestCase):
         """
         Test that we can refresh token with app_id and refresh_token
         """
-        result = self.client.get(f"/api/oauth/authorize/{self.app_id}/{self.app_secret}/client_credential/", follow=True)
+        result = self.client.get(f"/oauth/authorize/{self.app_id}/{self.app_secret}/client_credential/", follow=True)
 
         self.assertEqual(result.status_code, 200)
 
         refresh_token = result.data.get("refresh_token", '')
-        result2 = self.client.get(f"/api/oauth/refresh-token/{self.app_id}/refresh_token/",
+        result2 = self.client.get(f"/oauth/refresh-token/{self.app_id}/refresh_token/",
                                  follow=True, headers={"authorization": f"Bearer {refresh_token}"})
 
         self.assertEqual(result2.status_code, 200)
@@ -43,12 +43,12 @@ class OauthTestCase(TestCase):
         """
         Test that we can test OAuth
         """
-        result = self.client.get(f"/api/oauth/authorize/{self.app_id}/{self.app_secret}/client_credential/", follow=True)
+        result = self.client.get(f"/oauth/authorize/{self.app_id}/{self.app_secret}/client_credential/", follow=True)
 
         self.assertEqual(result.status_code, 200)
 
         access_token = result.data.get("access_token", '')
 
-        result2 = self.client.get(f"/api/oauth/test_oauth/", headers={"authorization": f"Bearer {access_token}"})
+        result2 = self.client.get(f"/oauth/test-oauth/", headers={"authorization": f"Bearer {access_token}"})
 
         self.assertEqual(result2.status_code, 200)

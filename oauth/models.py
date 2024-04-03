@@ -21,7 +21,7 @@ class App(models.Model):
     app_name = models.CharField("应用名称", max_length=64, db_comment="应用名称", help_text="应用名称")
     app_en_name = models.CharField("应用英文名称", max_length=64, db_comment="应用英文名称", help_text="应用英文名称",
                                    null=True, blank=True)
-    is_active = models.BooleanField("激活状态", default=True, db_comment="激活状态", help_text="激活状态")
+    is_active = models.BooleanField("激活状态", default=True, db_comment="激活状态", help_text="激活状态", db_default=True)
     gmt_created = models.DateTimeField("创建日期时间", auto_now_add=True, help_text="创建日期时间",
                                        db_comment="创建日期时间")
     gmt_updated = models.DateTimeField("最后更新日期时间", auto_now=True, help_text="最后更新日期时间",

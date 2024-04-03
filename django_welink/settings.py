@@ -32,22 +32,16 @@ SECRET_KEY = os.getenv(
 )
 
 # 应用版本号
-# VERSION = (1, 0, 2, "alpha", 3)
-# __version__ = get_version(VERSION)
-__version__ = os.getenv('APP_VERSION', '1.0')
-APP_COMMIT_HASH = os.getenv('APP_COMMIT_HASH', '')
-if not APP_COMMIT_HASH:
-    APP_COMMIT_HASH = subprocess.check_output(["git", "rev-parse", '--short', "HEAD"]).decode('UTF8').strip()
-APP_BRANCH = os.getenv('APP_BRANCH', '')
-if not APP_BRANCH:
-    APP_BRANCH = subprocess.check_output(["git", "rev-parse", "--abbrev-ref", "HEAD"]).decode('UTF8').strip()
-APP_ENV = 'Production' if not int(os.environ.get("APP_DEBUG", default=0)) else 'Develop'
-APP_VERSION_VERBOSE = f"{__version__}({APP_ENV}|{APP_BRANCH}|{APP_COMMIT_HASH})"
+VERSION = (1, 0, 2, "alpha", 5)
+__version__ = get_version(VERSION)
+
+with open(os.path.join(BASE_DIR, 'AppVersionHash.txt')) as fp:
+    APP_COMMIT_HASH = fp.readline()
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = int(os.environ.get("APP_DEBUG", default=1))
-ALLOWED_HOSTS = os.getenv("APP_DJANGO_ALLOWED_HOSTS", "*").split(" ")
-CSRF_TRUSTED_ORIGINS = os.getenv("APP_CSRF_TRUSTED_ORIGINS", "http://*").split(" ")
+ALLOWED_HOSTS = os.getenv("APP_DJANGO_ALLOWED_HOSTS", "*").split(",")
+CSRF_TRUSTED_ORIGINS = os.getenv("APP_CSRF_TRUSTED_ORIGINS", "http://*").split(",")
 
 
 # Application definition
@@ -116,10 +110,22 @@ WSGI_APPLICATION = 'django_welink.wsgi.application'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
+    "default2": {
+            "ENGINE": os.getenv("APP_DB_ENGINE", "django.db.backends.postgresql"),
+            "NAME": os.getenv("APP_DB_NAME", "hipmessageservice"),
+            "USER": os.getenv("APP_DB_USER", "zhiming"),
+            "PASSWORD": os.getenv("APP_DB_PASSWORD", "zhiming"),
+            "HOST": os.getenv("APP_DB_HOST", "dev.esb.alsoapp.com"),
+            "PORT": os.getenv("APP_DB_PORT", "5432"),
+        },
+    'test': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    },
+    'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        },
 }
 
 # Password validation
@@ -143,9 +149,12 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
-LANGUAGE_CODE = 'zh-Hans'
-TIME_ZONE = 'Asia/Shanghai'
+LANGUAGE_CODE = os.getenv('APP_LANGUAGE_CODE', 'zh-hans')
+
+TIME_ZONE = os.getenv('APP_TIME_ZONE', 'Asia/Shanghai')
+
 USE_I18N = True
+
 USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
@@ -194,8 +203,10 @@ REST_FRAMEWORK = {
     ),
     # 定义限流速率（支持天数/时/分/秒的限制）;`second`, `minute`, `hour` 或`day`来指明周期
     'DEFAULT_THROTTLE_RATES': {
-        'anon': '128/day',
-        'user': '1024/day',
+        'anon': '100/hour',
+        'user': '10240/day',
+        'oauth_authorize': '10/day', # 用于用户登录认证
+        'oauth_refresh_token': '5/hour' # 用于用户刷新请求令牌
     },
 
     # 异常处理

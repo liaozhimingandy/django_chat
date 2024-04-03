@@ -35,7 +35,7 @@ def generate_jwt_token(data: dict, expires_in: timedelta = timedelta(hours=2),
         "exp": datetime.utcnow() + expires_in,
         "grant_type": grant_type,
         "version": "2.0",
-        "type": "production"
+        "type": "Production"
     }
 
     payload.update(**data)

@@ -16,10 +16,8 @@ RUN mkdir /opt/app
 WORKDIR /opt/app
 COPY . /opt/app
 
-RUN ["chmod", "+x", "/opt/app/config/entrypoint.sh"]
-
-# run entrypoint.sh
-ENTRYPOINT ["/opt/app/config/entrypoint.sh"]
+# run command
+CMD ["gunicorn", "django_welink.wsgi:application", "-c", "/opt/app/config/gunicorn.py"]
 
 # 构建命令
 # docker build -t liaozhiming/django_welink:latest .
