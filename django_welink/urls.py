@@ -17,23 +17,16 @@ from django.contrib import admin
 from django.urls import path, re_path, include
 from django.conf.urls.static import static
 from django.conf import settings
-from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
+from .api import api
 
 from moment import urls as moment_urls
-from oauth import urls as oauth_urls
-from moment.views import test
 
 urlpatterns = [
-    path("test/", test, name='test'),
     path('admin/doc/', include('django.contrib.admindocs.urls')),
     path('admin/', admin.site.urls, name="admin"),
     re_path('^moment/', include((moment_urls, 'moment'), namespace='moment')),
-    re_path('^oauth/', include((oauth_urls, 'oauth'), namespace='oauth')),
-    path('schema/', SpectacularAPIView.as_view(), name='schema'),
-    # Optional UI:
-    path('doc/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),  # swagger接口文档
-    path('redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),  # redoc接口文档
-
+    # re_path('^oauth/', include((oauth_urls, 'oauth'), namespace='oauth')),
+    path('', api.urls)
 ]
 
 # 开发环境提供静态文件和多媒体查看功能
