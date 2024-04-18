@@ -43,7 +43,6 @@ DEBUG = int(os.environ.get("APP_DEBUG", default=1))
 ALLOWED_HOSTS = os.getenv("APP_DJANGO_ALLOWED_HOSTS", "*").split(",")
 CSRF_TRUSTED_ORIGINS = os.getenv("APP_CSRF_TRUSTED_ORIGINS", "http://*").split(",")
 
-
 # Application definition
 # 官方app
 DJANGO_APPS = [
@@ -61,11 +60,14 @@ THIRD_PARTY_APPS = [
     "ninja",
     'corsheaders',  # 添加：跨域组件
     'django_filters'
-   ]
+]
 
 # 本地app
 LOCAL_APPS = [
-    "moment",
+    "account",
+    "post",
+    "comment",
+    "like",
     "oauth"
     # Your stuff: custom apps go here
 ]
@@ -109,21 +111,24 @@ WSGI_APPLICATION = 'django_welink.wsgi.application'
 
 DATABASES = {
     "default2": {
-            "ENGINE": os.getenv("APP_DB_ENGINE", "django.db.backends.postgresql"),
-            "NAME": os.getenv("APP_DB_NAME", "hipmessageservice"),
-            "USER": os.getenv("APP_DB_USER", "zhiming"),
-            "PASSWORD": os.getenv("APP_DB_PASSWORD", "zhiming"),
-            "HOST": os.getenv("APP_DB_HOST", "dev.esb.alsoapp.com"),
-            "PORT": os.getenv("APP_DB_PORT", "5432"),
+        "ENGINE": os.getenv("APP_DB_ENGINE", "django.db.backends.postgresql"),
+        "NAME": os.getenv("APP_DB_NAME", "welink"),
+        "USER": os.getenv("APP_DB_USER", "zhiming"),
+        "PASSWORD": os.getenv("APP_DB_PASSWORD", "zhiming"),
+        "HOST": os.getenv("APP_DB_HOST", "dev.esb.alsoapp.com"),
+        "PORT": os.getenv("APP_DB_PORT", "5432"),
+        'OPTIONS': {
+            'options': '-c timezone=Asia/Shanghai',
         },
+    },
     'test': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     },
     'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        },
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    },
 }
 
 # Password validation
@@ -149,11 +154,11 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = os.getenv('APP_LANGUAGE_CODE', 'zh-hans')
 
-TIME_ZONE = os.getenv('APP_TIME_ZONE', 'Asia/Shanghai')
+TIME_ZONE = os.getenv('APP_TIME_ZONE', 'Asia/Shanghai') # 设置为中国上海时区，即北京时间
 
 USE_I18N = True
 
-USE_TZ = True
+USE_TZ = True  # 启用时区支持
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
@@ -197,5 +202,13 @@ MINIO_ENDPOINT = os.getenv('APP_MINIO_ENDPOINT', '172.16.33.188:10005')  # MinIO
 MINIO_BUCKET = os.getenv('APP_MINIO_BUCKET', 'chatapp')
 
 # 设置文件默认存储
-DEFAULT_FILE_STORAGE = 'moment.MyStorage.MinioStorage'
+DEFAULT_FILE_STORAGE = 'post.MyStorage.MinioStorage'
+##########################################################################################
+
+##########################################################################################
+# django-ninja配置
+
+NINJA_PAGINATION_PER_PAGE = 10  # 默认页面大小
+NINJA_PAGINATION_MAX_LIMIT = 10  # 每页的最大结果数
+
 ##########################################################################################

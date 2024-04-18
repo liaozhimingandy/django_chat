@@ -1,5 +1,5 @@
 # url 命令空间
-app_name = 'moment'
+app_name = 'post'
 
 urlpatterns = [
 

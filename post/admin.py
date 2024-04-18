@@ -1,16 +1,16 @@
 from django.contrib import admin
 
 from django_welink import settings
-from moment.models import Moment, Image
+from post.models import Post, Image
 
 
 # Register your models here.
-@admin.register(Moment)
-class MomentAdmin(admin.ModelAdmin):
-    list_display = ['id', 'user_id', 'content', 'liked', 'gmt_created']
+@admin.register(Post)
+class PostAdmin(admin.ModelAdmin):
+    list_display = ['id', 'uid', 'content', 'liked', 'gmt_created']
     exclude = ['-gmt_created', ]
     # 搜索
-    search_fields = ['user_id']
+    search_fields = ['uid']
     # 分页 - 设置每页最大显示数目
     list_per_page = 10
 

@@ -19,12 +19,12 @@ from django.conf.urls.static import static
 from django.conf import settings
 from .api import api
 
-from moment import urls as moment_urls
+from post import urls as moment_urls
 
 urlpatterns = [
     path('admin/doc/', include('django.contrib.admindocs.urls')),
     path('admin/', admin.site.urls, name="admin"),
-    re_path('^moment/', include((moment_urls, 'moment'), namespace='moment')),
+    re_path('^post/', include((moment_urls, 'post'), namespace='post')),
     # re_path('^oauth/', include((oauth_urls, 'oauth'), namespace='oauth')),
     path('', api.urls)
 ]
