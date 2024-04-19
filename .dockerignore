@@ -16,3 +16,5 @@ db.sqlite3
 /_pycache_/*
 /readme.md
 /docker_build_auto.*
+/deploy/*
+README.md

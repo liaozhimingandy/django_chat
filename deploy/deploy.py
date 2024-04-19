@@ -65,4 +65,7 @@ class DeployBot:
 
 if __name__ == '__main__':
     bot = DeployBot()
+    # 移除psycopg2,该包仅windows需要
+    # subprocess.check_output("pdm remove psycopg2")
     bot.deploy()
+    # subprocess.check_output("pdm add psycopg2")

@@ -36,7 +36,7 @@ with open(os.path.join(BASE_DIR, 'AppVersionHash.txt')) as fp:
     APP_COMMIT_HASH = fp.readline()
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = int(os.environ.get("APP_DEBUG", default=1))
+DEBUG = int(os.environ.get("APP_DEBUG", default=0))
 ALLOWED_HOSTS = os.getenv("APP_DJANGO_ALLOWED_HOSTS", "*").split(",")
 CSRF_TRUSTED_ORIGINS = os.getenv("APP_CSRF_TRUSTED_ORIGINS", "http://*").split(",")
 

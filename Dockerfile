@@ -3,8 +3,20 @@ ARG TAG=3.11.2-slim-buster
 
 FROM python:${TAG} as builder-image
 
-COPY requirements.txt .
-RUN pip3 install --no-cache-dir -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple/
+# pip镜像源
+ENV PIPURL "https://mirrors.aliyun.com/pypi/simple/"
+
+# change apt-get mirror
+COPY pdm.lock .
+
+# 安装依赖包
+RUN pip3 install --no-cache-dir pdm -i ${PIPURL} --default-timeout=1000  \
+    && pdm export -o requirements.txt  --without-hashes  \
+    && pip3 install --no-cache-dir -r requirements.txt -i ${PIPURL} --default-timeout=1000  \
+    && rm -f requirements.txt  \
+    && rm -f pdm.lock
+
+
 
 FROM python:${TAG}
 
@@ -13,10 +25,10 @@ COPY --from=builder-image /usr/local/bin /usr/local/bin
 COPY --from=builder-image /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
 
 RUN mkdir /opt/app
-WORKDIR /opt/app
 COPY . /opt/app
 
-# run command
+WORKDIR /opt/app
+# command
 CMD ["gunicorn", "django_chat.wsgi:application", "-c", "/opt/app/config/gunicorn.py"]
 
 # 构建命令

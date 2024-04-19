@@ -8,6 +8,11 @@
 其它文档：https://blog.csdn.net/aichaoxy/article/details/134733841
 ```
 
+### 首次安装依赖
+```javascript
+pdm install
+```
+
 ### 依赖
 ```python
 pdm export -o requirements.txt --without-hashes
