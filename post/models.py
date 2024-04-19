@@ -2,6 +2,7 @@ import uuid
 
 from django.db import models
 from django.utils.timezone import now
+from django.conf import settings
 
 
 # Create your models here.
@@ -46,7 +47,7 @@ class Post(models.Model):
     # 表信息声明
     class Meta:
         # 设置数据库中表名
-        db_table = "welink_post"
+        db_table = f"{settings.APP_NAME}_post"
         verbose_name = "动态表"
         verbose_name_plural = verbose_name
 
@@ -60,7 +61,7 @@ class Image(models.Model):
 
     class Meta:
         # 设置数据库中表名
-        db_table = "welink_image"
+        db_table = f"{settings.APP_NAME}_image"
         verbose_name = "图片表"
         verbose_name_plural = verbose_name
 

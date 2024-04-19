@@ -123,6 +123,7 @@ def update_account(request, username: str, payload: AccountSchemaIn):
     account.save()
     return account
 
+
 @router.get('/search/{keyword}/')
 def account_search(request, keyword: str):
     return Account.objects.filter(Q(username__icontains=keyword) | Q(nick__icontains=keyword))

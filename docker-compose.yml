@@ -4,7 +4,7 @@ services:
   chatapp:
     image: ${APP_IMAGE}
 #    for producation,转至配置文件中
-#    command: gunicorn django_welink.wsgi:application --workers 3 --bind :8000
+#    command: gunicorn django_chat.wsgi:application --workers 3 --bind :8000
     command: ${COMMAND}
 
 #    for beta

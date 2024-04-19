@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import UniqueConstraint
+from django.conf import settings
 
 
 # Create your models here.
@@ -13,7 +14,7 @@ class Like(models.Model):
 
     # 表信息声明
     class Meta:
-        db_table = 'welink_like'
+        db_table = f'{settings.APP_NAME}_like'
         # 设置数据库中表名
         verbose_name = "赞表"
         verbose_name_plural = verbose_name

@@ -2,6 +2,7 @@ import uuid
 
 from django.db import models
 from django.core.management.utils import get_random_string
+from django.conf import settings
 
 
 def salt_default():
@@ -28,5 +29,6 @@ class App(models.Model):
                                        db_comment="最后更新日期时间")
 
     class Meta:
+        db_table = f"{settings.APP_NAME}_app"
         verbose_name = "应用信息"
         verbose_name_plural = verbose_name

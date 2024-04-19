@@ -17,8 +17,8 @@ WORKDIR /opt/app
 COPY . /opt/app
 
 # run command
-CMD ["gunicorn", "django_welink.wsgi:application", "-c", "/opt/app/config/gunicorn.py"]
+CMD ["gunicorn", "django_chat.wsgi:application", "-c", "/opt/app/config/gunicorn.py"]
 
 # 构建命令
-# docker build -t liaozhiming/django_welink:latest .
+# docker build -t liaozhiming/django_chat:latest .
 # 文件格式问题,请保持unix编码;set ff=unix

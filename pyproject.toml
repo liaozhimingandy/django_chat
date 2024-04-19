@@ -1,7 +1,7 @@
 [project]
-name = "django_welink"
-version = "0.1.0"
-description = "welink app"
+name = "django_chat"
+version = "1.0.1"
+description = "chat app"
 authors = [
     {name = "liaozhiming", email = "liaozhimingandy@qq.com"},
 ]
@@ -16,6 +16,7 @@ dependencies = [
     "pyjwt>=2.8.0",
     "django-ninja>=1.1.0",
     "minio>=7.2.5",
+    "psycopg2>=2.9.9",
 ]
 requires-python = ">=3.10"
 readme = "README.md"

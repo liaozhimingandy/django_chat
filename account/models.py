@@ -4,6 +4,8 @@ from datetime import datetime
 from django.core.exceptions import ValidationError
 from django.db import models
 
+from django.conf import settings
+
 
 def salt_default():
     return str(uuid.uuid4()).replace('-', '')[:8]
@@ -67,7 +69,7 @@ class Account(models.Model):
 
     # 表信息声明
     class Meta:
-        db_table = 'welink_account'
+        db_table = f'{settings.APP_NAME}_account'
         # 设置数据库中表名
         verbose_name = "用户信息表"
         verbose_name_plural = verbose_name

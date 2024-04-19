@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 
 
 # Create your models here.
@@ -17,7 +18,7 @@ class Comment(models.Model):
 
     # 表信息声明
     class Meta:
-        db_table = 'welink_comment'
+        db_table = f'{settings.APP_NAME}_comment'
         # 设置数据库中表名
         verbose_name = "评论表"
         verbose_name_plural = verbose_name

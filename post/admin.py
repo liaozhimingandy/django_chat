@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from django_welink import settings
+from django_chat import settings
 from post.models import Post, Image
 
 

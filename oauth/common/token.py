@@ -5,7 +5,7 @@ from datetime import timedelta, datetime
 
 import jwt
 
-from django_welink import settings
+from django.conf import settings
 
 
 def generate_jwt_token(data: dict, expires_in: timedelta = timedelta(hours=2),

@@ -8,7 +8,7 @@
 /static/*
 /.idea/*
 /./assets/*
-/db.sqlite3
+db.sqlite3
 /config/.env
 /config/default_nginx.conf
 /config/default_nginx_ssl.conf

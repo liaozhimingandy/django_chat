@@ -1,4 +1,4 @@
-# django_welink
+# django_chat
 后端接口
 
 #### 参考链接
