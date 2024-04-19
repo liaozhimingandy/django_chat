@@ -36,7 +36,7 @@ class Error(Schema):
     message: str
 
 
-@router.get("/authorize/{app_id}/{app_secret}/{grant_type}/", response={200: RefreshTokenSchema, 403: Error})
+@router.get("/authorize/{app_id}/{app_secret}/{grant_type}/", auth=None, response={200: RefreshTokenSchema, 403: Error})
 def authorize(request, app_id: str, app_secret: str, grant_type: str):
     """
 
@@ -70,7 +70,7 @@ def authorize(request, app_id: str, app_secret: str, grant_type: str):
     return 200, token_access
 
 
-@router.get("/refresh-token/{app_id}/{grant_type}/", auth=AuthBearer(), response={200: AccessTokenSchema, 403: Error})
+@router.get("/refresh-token/{app_id}/{grant_type}/", response={200: AccessTokenSchema, 403: Error})
 def refresh_token(request, app_id: str, grant_type: str):
     """
 
@@ -88,7 +88,6 @@ def refresh_token(request, app_id: str, grant_type: str):
 
     try:
         assert grant_type == "refresh_token", "grant_type must equal refresh_token"
-
     except AssertionError as e:
         return 403, {"message": str(e)}
     try:

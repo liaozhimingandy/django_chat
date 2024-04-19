@@ -27,8 +27,8 @@ class PostSchemaIn(ModelSchema):
     class Meta:
         model = Post
         fields = ['content', 'uid', 'from_device', 'right_status',
-                  'location', 'is_top', 'latitude', 'longitude', 'status']
-        fields_optional = ['right_status', "is_top", 'latitude', 'longitude', 'status']
+                  'location', 'is_top', 'latitude', 'longitude', 'status', "app_id"]
+        fields_optional = ['right_status', "is_top", 'latitude', 'longitude', 'status', "app_id"]
 
 
 class PostSchemaOut(ModelSchema):
@@ -61,7 +61,7 @@ def create_post(request, payload: PostSchemaIn):
     :param payload:
     :return:
     """
-    payload_dict = payload.dict()
+    payload_dict = payload.dict(exclude_unset=True)
     payload_dict.update(**{"from_ip": request.META['REMOTE_ADDR']})
     post = Post(**payload_dict)
     post.save()

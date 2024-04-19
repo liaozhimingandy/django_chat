@@ -5,6 +5,9 @@ from django.core.exceptions import ValidationError
 from django.db import models
 
 
+def salt_default():
+    return str(uuid.uuid4()).replace('-', '')[:8]
+
 def username_default():
     return "wlid_"+str(uuid.uuid4()).replace('-', '')[:8]
 
@@ -49,6 +52,7 @@ class Account(models.Model):
                                        verbose_name="创建日期时间")
     im_id = models.CharField(max_length=64, db_comment="im ID", help_text="im ID", verbose_name="im ID", null=True,
                              blank=True)
+    salt = models.CharField(default=salt_default, max_length=8, db_comment="盐", help_text="盐")
     gmt_modified = models.DateTimeField(auto_now=True, help_text="最后修改时间", db_comment="最后修改时间", verbose_name="最后修改时间")
 
     def clean(self):
