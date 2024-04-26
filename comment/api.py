@@ -82,5 +82,18 @@ def list_comment(request, app_id: str, post_id: str):
     return comments
 
 
+@router.get("/{app_id}/{post_id}/count/")
+def get_comment_count(request, app_id: str, post_id: str):
+    """
+    获取指定帖子的评论数<br>
+    :param request: <br>
+    :param app_id: 应用ID<br>
+    :param post_id: 帖子ID<br>
+    :return: <br>
+    """
+    _count = Comment.objects.filter(app_id=app_id, post_id=post_id).count()
+    return {"count": _count}
+
+
 if __name__ == "__main__":
     pass

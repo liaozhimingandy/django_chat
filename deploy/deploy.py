@@ -35,6 +35,31 @@ class DeployBot:
 
         print(f"{self.name}docker镜像push成功,{image_name}\n")
 
+    def _deploy_docker_env(self, **kwargs) -> None:
+        """
+        覆盖或赋值环境变量对应值
+        :param kwargs:
+        :return:
+        """
+
+        # 读取.env文件中的变量
+        env_values = {}
+        with open('../config/.env', 'r', encoding="UTF-8") as fp:
+            for line in fp:
+                if line.strip() and not line.strip().startswith('#'):
+                    key, value = line.strip().split('=', 1)
+                    env_values[key.strip()] = value.strip()
+
+        # 设置新的变量值
+        env_values.update(**kwargs)
+
+        # 回写到.env文件中
+        with open('../.env', 'w', encoding="UTF-8") as fp:
+            for key, value in env_values.items():
+                fp.write(f"{key}={value}\n")
+
+        print(f".env更新成功!")
+
     def deploy(self):
         # 使用git命令获取简短hash值
         cmd_git_hash = ["git", "rev-parse", "--short", "HEAD"]
@@ -58,6 +83,10 @@ class DeployBot:
 
         # 自动提交至阿里云镜像仓库
         self._deploy_docker_push(image_name=image_name)
+
+        # 更新.env变量
+        self._deploy_docker_env(APP_IMAGE=image_name, APP_COMMIT_HASH=desc_git_hash)
+
 
         print(
             f"自动构建成功!version: {app_version}, revision: {desc_git_branch}-{desc_git_hash}, docker镜像: {image_name}\n")

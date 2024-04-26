@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   chat:
-    image: django_chat:1.0.2a5
+    image: ${APP_IMAGE}
 #    for producation,请注释command行即可
 #    for beta
     command: python manage.py runserver 0.0.0.0:8000

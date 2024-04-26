@@ -48,7 +48,7 @@ class Post(models.Model):
     class Meta:
         # 设置数据库中表名
         db_table = f"{settings.APP_NAME}_post"
-        verbose_name = "动态表"
+        verbose_name = "帖子表"
         verbose_name_plural = verbose_name
 
 

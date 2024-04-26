@@ -10,7 +10,6 @@
 ================================================="""
 
 from ninja import Router, ModelSchema
-from ninja.orm import ModelSchema
 
 from like.models import Like
 
@@ -48,7 +47,7 @@ def delete_like(request, app_id: str, post_id: str, uid: str):
     :return:
     """
     count_like = Like.objects.filter(app_id=app_id, post_id=post_id).count()
-    Like.objects.filter(app_id=app_id, post_id=app_id, uid=uid).delete()
+    Like.objects.filter(app_id=app_id, post_id=post_id, uid=uid).delete()
     return {"code": 200,  "message": "ok", "data": {"count": count_like, "is_like": False}}
 
 

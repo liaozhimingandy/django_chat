@@ -28,7 +28,7 @@ SECRET_KEY = os.getenv(
 )
 
 # 应用版本号
-VERSION = (1, 0, 2, "alpha", 5)
+VERSION = (23, 0, 2, "alpha", 8)
 __version__ = get_version(VERSION)
 APP_NAME = "chat"
 
@@ -36,9 +36,9 @@ with open(os.path.join(BASE_DIR, 'AppVersionHash.txt')) as fp:
     APP_COMMIT_HASH = fp.readline()
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = int(os.environ.get("APP_DEBUG", default=0))
+DEBUG = int(os.environ.get("APP_DEBUG", default=1))
 ALLOWED_HOSTS = os.getenv("APP_DJANGO_ALLOWED_HOSTS", "*").split(",")
-CSRF_TRUSTED_ORIGINS = os.getenv("APP_CSRF_TRUSTED_ORIGINS", "http://*").split(",")
+CSRF_TRUSTED_ORIGINS = os.getenv("APP_CSRF_TRUSTED_ORIGINS", "http://*,https://*").split(",")
 
 # Application definition
 # 官方app
@@ -120,7 +120,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     },
-    'default2': {
+    'default1': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     },
@@ -194,7 +194,7 @@ MINIO_ACCESS_KEY = os.getenv('APP_MINIO_ACCESS_KEY', 'chat')
 MINIO_SECRET_KEY = os.getenv('APP_MINIO_SECRET_KEY', 'chat1234')
 MINIO_SCHEMA = os.getenv('APP_MINIO_SCHEMA', 'http://')
 MINIO_ENDPOINT = os.getenv('APP_MINIO_ENDPOINT', '172.16.33.188:10005')  # MinIO服务器地址
-MINIO_BUCKET = os.getenv('APP_MINIO_BUCKET', 'chatapp')
+MINIO_BUCKET = os.getenv('APP_MINIO_BUCKET', 'chat')
 
 # 设置文件默认存储
 DEFAULT_FILE_STORAGE = 'post.MyStorage.MinioStorage'
@@ -202,8 +202,6 @@ DEFAULT_FILE_STORAGE = 'post.MyStorage.MinioStorage'
 
 ##########################################################################################
 # django-ninja配置
-
 NINJA_PAGINATION_PER_PAGE = 10  # 默认页面大小
 NINJA_PAGINATION_MAX_LIMIT = 10  # 每页的最大结果数
-
 ##########################################################################################

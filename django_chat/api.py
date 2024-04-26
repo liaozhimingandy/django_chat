@@ -18,8 +18,9 @@ from post.api import router as post_router
 from post.api import router_image
 from like.api import router as like_router
 
+# todo: 上线时开启auth=AuthBearer()
 api = NinjaAPI(version='1.0.0', title='Chat API', description="内部接口文档",
-               auth=AuthBearer(), openapi_extra={
+               auth=None, openapi_extra={
                 "info": {
                     "terms Of Service": "https://api.chat.alsoapp.com/",
                 }}, docs_url="/docs/", servers=[
