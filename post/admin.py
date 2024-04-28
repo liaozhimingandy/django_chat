@@ -7,7 +7,7 @@ from post.models import Post, Image
 # Register your models here.
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
-    list_display = ['id', 'uid', 'content', 'liked', 'gmt_created']
+    list_display = ['id', 'uid', 'content', 'gmt_created']
     exclude = ['gmt_created', ]
     # 搜索
     search_fields = ['uid']

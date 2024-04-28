@@ -32,7 +32,6 @@ class Post(models.Model):
                                 db_comment="位置", verbose_name="位置")
     is_top = models.BooleanField(default=False, help_text='是否置顶', db_comment='是否置顶', db_default=False,
                                  verbose_name="是否置顶")
-    liked = models.PositiveIntegerField(default=0, help_text='赞数', db_comment="赞数", verbose_name="赞数")
     content_class = models.PositiveSmallIntegerField(help_text='内容类型', default=1, null=False, blank=True,
                                                      db_comment="内容类型", choices=ContentClassChoice)
     latitude = models.DecimalField(max_digits=9, decimal_places=6, help_text="经度", db_comment="经度", null=True,

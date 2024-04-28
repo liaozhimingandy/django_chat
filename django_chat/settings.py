@@ -28,7 +28,7 @@ SECRET_KEY = os.getenv(
 )
 
 # 应用版本号
-VERSION = (23, 0, 2, "alpha", 8)
+VERSION = (23, 0, 2, "alpha", 9)
 __version__ = get_version(VERSION)
 APP_NAME = "chat"
 
@@ -110,7 +110,7 @@ DATABASES = {
         "NAME": os.getenv("APP_DB_NAME", "chat"),
         "USER": os.getenv("APP_DB_USER", "zhiming"),
         "PASSWORD": os.getenv("APP_DB_PASSWORD", "zhiming"),
-        "HOST": os.getenv("APP_DB_HOST", "dev.esb.alsoapp.com"),
+        "HOST": os.getenv("APP_DB_HOST", "db.chat.alsoapp.com"),
         "PORT": os.getenv("APP_DB_PORT", "5432"),
         'OPTIONS': {
             'options': '-c timezone=Asia/Shanghai',

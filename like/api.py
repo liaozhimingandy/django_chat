@@ -34,7 +34,7 @@ def get_likes(request, app_id: str, post_id: str, uid: str):
     """
     count_like = Like.objects.filter(app_id=app_id, post_id=post_id).count()
     is_like = Like.objects.filter(app_id=app_id, post_id=post_id, uid=uid).exists()
-    return {"code": 200,  "message": "ok", "data": {"count": count_like, "is_like": is_like}}
+    return {"count": count_like, "is_like": is_like}
 
 
 @router.delete("/{app_id}/{post_id}/{uid}/")
@@ -48,7 +48,7 @@ def delete_like(request, app_id: str, post_id: str, uid: str):
     """
     count_like = Like.objects.filter(app_id=app_id, post_id=post_id).count()
     Like.objects.filter(app_id=app_id, post_id=post_id, uid=uid).delete()
-    return {"code": 200,  "message": "ok", "data": {"count": count_like, "is_like": False}}
+    return {"count": count_like, "is_like": False}
 
 
 @router.post("/{app_id}/{post_id}/")
@@ -66,7 +66,7 @@ def create_like(request, app_id: str, post_id: str, payload: LikeSchema):
 
     count_like = Like.objects.filter(app_id=app_id, post_id=post_id).count()
 
-    return {"code": 201,  "message": "ok", "data": {"count": count_like, "is_like": True}}
+    return {"count": count_like, "is_like": True}
 
 
 if __name__ == "__main__":
