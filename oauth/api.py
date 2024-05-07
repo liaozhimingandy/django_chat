@@ -52,7 +52,7 @@ def authorize(request, app_id: str, app_secret: str, grant_type: str):
     try:
         assert len(app_secret) > 0, "app_secret must exists"
         assert grant_type == "client_credential", "grant_type must equal client_credential"
-        app = App.objects.get(app_id=app_id, app_secret=app_secret, is_active=True)
+        app = App.objects.get(app_id=app_id.replace('esbid_', ''), app_secret=app_secret, is_active=True)
     except AssertionError as e:
         return 403, {"message": str(e)}
     except App.DoesNotExist:
@@ -70,7 +70,7 @@ def authorize(request, app_id: str, app_secret: str, grant_type: str):
     return 200, token_access
 
 
-@router.get("/refresh-token/{app_id}/{grant_type}/", response={200: AccessTokenSchema, 403: Error})
+@router.get("/refresh-token/{app_id}/{grant_type}/", auth=AuthBearer(), response={200: AccessTokenSchema, 403: Error})
 def refresh_token(request, app_id: str, grant_type: str):
     """
 
@@ -91,8 +91,8 @@ def refresh_token(request, app_id: str, grant_type: str):
     except AssertionError as e:
         return 403, {"message": str(e)}
     try:
-        app = App.objects.get(app_id=app_id, is_active=True)
-        assert request.user.username == app.salt, "app_secret changed, please login again!"
+        app = App.objects.get(app_id=app_id.replace('esbid_', ''), is_active=True)
+        assert request.user.username == app.salt, "app_secret or salt changed, please login again!"
     except App.DoesNotExist:
         return 403, {"message": "No Found"}
     except AssertionError as e:
@@ -107,7 +107,7 @@ def refresh_token(request, app_id: str, grant_type: str):
     return 200, token_access
 
 
-@router.get("test-oauth/")
+@router.get("test-oauth/",auth=AuthBearer())
 def test_oauth(request):
     return 200, {"message": "hello word"}
 

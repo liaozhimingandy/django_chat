@@ -58,7 +58,7 @@ def verify_jwt_token(data: str, grant_type: str = "client_credential") -> dict:
     """
     try:
         decode = jwt.decode(data, key=settings.SECRET_KEY, algorithms=['HS256'], audience='www.alsoapp.com')
-        assert decode["grant_type"] == grant_type, f"not a {grant_type}"
+        assert decode["grant_type"] == grant_type, f'{decode["grant_type"]} != {grant_type}'
     except jwt.ExpiredSignatureError as e:
         return {"message": str(e)}  # Signature has expired
     except jwt.InvalidAudienceError as e:

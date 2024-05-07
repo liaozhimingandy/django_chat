@@ -6,7 +6,11 @@ from django.conf import settings
 
 
 def salt_default():
-    return str(uuid.uuid4()).replace('-', '')[:8]
+    return uuid.uuid4().hex[:8]
+
+
+def app_id_default():
+    return uuid.uuid4().hex[:7]
 
 
 def app_secret_default():
@@ -15,7 +19,7 @@ def app_secret_default():
 
 # Create your models here.
 class App(models.Model):
-    app_id = models.UUIDField(default=uuid.uuid4, db_comment="appid")
+    app_id = models.CharField(max_length=7, default=app_id_default, db_comment="appid", editable=False)
     app_secret = models.CharField(default=app_secret_default, max_length=128, db_comment="应用密钥",
                                   help_text="应用密钥")
     salt = models.CharField(default=salt_default, max_length=8, db_comment="盐", help_text="盐")
@@ -27,6 +31,9 @@ class App(models.Model):
                                        db_comment="创建日期时间")
     gmt_updated = models.DateTimeField("最后更新日期时间", auto_now=True, help_text="最后更新日期时间",
                                        db_comment="最后更新日期时间")
+
+    def __str__(self):
+        return f"{self.app_name}-esbid_{self.app_id}"
 
     class Meta:
         db_table = f"{settings.APP_NAME}_app"

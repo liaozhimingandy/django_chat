@@ -28,7 +28,7 @@ SECRET_KEY = os.getenv(
 )
 
 # 应用版本号
-VERSION = (23, 0, 2, "alpha", 9)
+VERSION = (23, 0, 2, "alpha", 10)
 __version__ = get_version(VERSION)
 APP_NAME = "chat"
 
@@ -118,11 +118,11 @@ DATABASES = {
     },
     'test': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': BASE_DIR / 'chat.db',
     },
     'default1': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': BASE_DIR / 'chat.db',
     },
 }
 

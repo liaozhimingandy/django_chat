@@ -8,10 +8,11 @@ from django.conf import settings
 
 
 def salt_default():
-    return str(uuid.uuid4()).replace('-', '')[:8]
+    return uuid.uuid4().hex[:8]
+
 
 def username_default():
-    return "wlid_"+str(uuid.uuid4()).replace('-', '')[:8]
+    return f"cid_{uuid.uuid4().hex[:7]}"
 
 
 # Create your models here.
@@ -25,12 +26,13 @@ class Account(models.Model):
     class AreaCodeChoices(models.TextChoices):
         CHN = ('CHN', '中国')
 
-    username = models.CharField(default=username_default, max_length=64, unique=True, db_comment="用户名", help_text="用户名",
-                                verbose_name="用户名", db_index=True)
+    username = models.CharField(default=username_default, max_length=64, unique=True, db_comment="用户名",
+                                help_text="用户名", verbose_name="用户名", db_index=True)
     nick_name = models.CharField(max_length=64, db_comment="昵称", help_text="昵称", verbose_name="昵称")
     email = models.EmailField(db_comment="电子邮箱", help_text="电子邮箱", verbose_name="电子邮箱",
                               null=True, db_index=True)
-    gmt_birth = models.DateTimeField(db_comment="出生日期", help_text="出生日期", verbose_name="出生日期", null=True, blank=True)
+    gmt_birth = models.DateTimeField(db_comment="出生日期", help_text="出生日期", verbose_name="出生日期", null=True,
+                                     blank=True)
     areaCode = models.CharField(choices=AreaCodeChoices, max_length=3, db_comment="区域代码", help_text="区域代码",
                                 verbose_name="区域代码", db_default='CHN', default='CHN', null=True)
     mobile = models.CharField(max_length=32, db_comment="电话号码", help_text="电话号码", verbose_name="电话号码",
@@ -42,7 +44,8 @@ class Account(models.Model):
                              default='https://www.alsoapp.com/favicon.svg')
     is_active = models.BooleanField(db_default=True, default=True, db_comment="账户状态", help_text="账户状态",
                                     verbose_name="账户状态")
-    user_type = models.SmallIntegerField(db_comment="账户状态", help_text="账户状态", verbose_name="账户状态", default=1)
+    user_type = models.SmallIntegerField(db_comment="账户状态", help_text="账户状态", verbose_name="账户状态",
+                                         default=1)
     password = models.CharField(max_length=128, db_comment="用户密码", help_text="用户密码", verbose_name="用户密码")
     allow_add_friend = models.BooleanField(db_default=True, default=True, db_comment="允许添加好友",
                                            help_text="允许添加好友", verbose_name="允许添加好友")
@@ -55,7 +58,8 @@ class Account(models.Model):
     im_id = models.CharField(max_length=64, db_comment="im ID", help_text="im ID", verbose_name="im ID", null=True,
                              blank=True)
     salt = models.CharField(default=salt_default, max_length=8, db_comment="盐", help_text="盐")
-    gmt_modified = models.DateTimeField(auto_now=True, help_text="最后修改时间", db_comment="最后修改时间", verbose_name="最后修改时间")
+    gmt_modified = models.DateTimeField(auto_now=True, help_text="最后修改时间", db_comment="最后修改时间",
+                                        verbose_name="最后修改时间")
 
     def clean(self):
         if self.email is not None:

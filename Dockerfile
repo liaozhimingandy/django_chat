@@ -10,10 +10,10 @@ ENV PIPURL "https://mirrors.aliyun.com/pypi/simple/"
 COPY pdm.lock .
 
 # 安装依赖包
-RUN pip3 install --no-cache-dir pdm -i ${PIPURL} --default-timeout=1000  \
-    && pdm export -o requirements.txt  --without-hashes  \
-    && pip3 install --no-cache-dir -r requirements.txt -i ${PIPURL} --default-timeout=1000  \
-    && rm -f requirements.txt  \
+RUN pip3 install --no-cache-dir pdm -i ${PIPURL} --default-timeout=1000 \
+    && pdm export -o requirements.txt  --without-hashes \
+    && pip3 install --no-cache-dir -r requirements.txt -i ${PIPURL} --default-timeout=1000 \
+    && rm -f requirements.txt \
     && rm -f pdm.lock
 
 

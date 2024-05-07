@@ -6,15 +6,17 @@ from oauth.common.token import verify_jwt_token
 
 
 class AuthBearer(HttpBearer):
+    """Bearer authentication
+    todo: 后续完善错误详细,目前统一返回 "detail": "Unauthorized"
+    """
     def authenticate(self, request, token):
-        if not token:
-            raise AuthenticationError({"message": "please use a token to request"})
 
         # 校验jwt token并解析数据
         grant_type = "client_credential" if request.resolver_match.view_name == "api-1.0.0:refresh_token" \
             else "access_token"
         jwt_decode = verify_jwt_token(token, grant_type=grant_type)
 
+        # 如果验证成功,则返回多个key的数据
         if len(jwt_decode.keys()) < 2:
             raise AuthenticationError(jwt_decode)
 
