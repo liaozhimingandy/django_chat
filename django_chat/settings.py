@@ -28,9 +28,11 @@ SECRET_KEY = os.getenv(
 )
 
 # 应用版本号
-VERSION = (23, 0, 2, "alpha", 10)
+VERSION = (23, 0, 2, "alpha", 12)
 __version__ = get_version(VERSION)
 APP_NAME = "chat"
+# id前缀
+PREFIX_ID = "esbid_"
 
 with open(os.path.join(BASE_DIR, 'AppVersionHash.txt')) as fp:
     APP_COMMIT_HASH = fp.readline()
@@ -59,10 +61,10 @@ THIRD_PARTY_APPS = [
 
 # 本地app
 LOCAL_APPS = [
-    "account",
-    "post",
-    "comment",
-    "like",
+    # "account",
+    # "post",
+    # "comment",
+    # "like",
     "oauth"
     # Your stuff: custom apps go here
 ]

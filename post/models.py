@@ -21,14 +21,14 @@ class Post(models.Model):
         TextElem = (1, "普通")
 
     content = models.JSONField(help_text="内容", db_comment='内容', verbose_name="内容")
-    uid = models.CharField(help_text="用户ID", max_length=64, db_comment='用户ID', verbose_name="用户ID")
+    uid = models.PositiveBigIntegerField(help_text="用户ID", db_comment='用户ID', verbose_name="用户ID")
     from_ip = models.GenericIPAddressField(help_text="来源ip", db_comment="来源ip", verbose_name="用户ID",
                                            unpack_ipv4=True)
     from_device = models.PositiveSmallIntegerField(choices=FromDeviceChoice, help_text='来源设备名称',
                                                    db_comment='来源设备名称', verbose_name="来源设备名称")
     right_status = models.PositiveSmallIntegerField(help_text='权限状态', default=1, db_comment="权限状态",
                                                     db_default=1, choices=RightStatusChoice, verbose_name="权限状态")
-    location = models.CharField(null=True, blank=True, help_text="位置", max_length=128,
+    location = models.CharField(null=True, blank=True, help_text="位置", max_length=64,
                                 db_comment="位置", verbose_name="位置")
     is_top = models.BooleanField(default=False, help_text='是否置顶', db_comment='是否置顶', db_default=False,
                                  verbose_name="是否置顶")
@@ -39,8 +39,8 @@ class Post(models.Model):
     longitude = models.DecimalField(max_digits=9, decimal_places=6, help_text="纬度", db_comment="纬度", null=True,
                                     blank=True, verbose_name="纬度")
     status = models.SmallIntegerField("帖子状态", help_text="帖子状态", db_comment="帖子状态", default=0)
-    app_id = models.PositiveSmallIntegerField(db_comment="帖子所属应用", verbose_name="帖子所属应用",
-                                              help_text="帖子所属应用", default=1, db_index=True)
+    app_id = models.PositiveIntegerField(db_comment="帖子所属应用", verbose_name="帖子所属应用",
+                                         help_text="帖子所属应用", default=1, db_index=True)
     gmt_created = models.DateTimeField(auto_now_add=True, help_text="创建日期时间", db_comment="创建日期时间")
 
     # 表信息声明

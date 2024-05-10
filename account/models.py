@@ -26,7 +26,7 @@ class Account(models.Model):
     class AreaCodeChoices(models.TextChoices):
         CHN = ('CHN', '中国')
 
-    username = models.CharField(default=username_default, max_length=64, unique=True, db_comment="用户名",
+    username = models.CharField(default=username_default, max_length=32, unique=True, db_comment="用户名",
                                 help_text="用户名", verbose_name="用户名", db_index=True)
     nick_name = models.CharField(max_length=64, db_comment="昵称", help_text="昵称", verbose_name="昵称")
     email = models.EmailField(db_comment="电子邮箱", help_text="电子邮箱", verbose_name="电子邮箱",

@@ -82,7 +82,7 @@ class DeployBot:
         self._deploy_docker_image(image_name=image_name, dockerfile_path=dockerfile_path)
 
         # 自动提交至阿里云镜像仓库
-        # self._deploy_docker_push(image_name=image_name)
+        self._deploy_docker_push(image_name=image_name)
 
         # 更新.env变量
         self._deploy_docker_env(APP_IMAGE=image_name, APP_COMMIT_HASH=desc_git_hash)

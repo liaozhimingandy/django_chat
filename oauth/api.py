@@ -10,7 +10,7 @@
 import uuid
 from datetime import timedelta
 from typing import Optional
-
+from django.conf import settings
 from ninja import Router, Schema
 
 from oauth.authentication import AuthBearer
@@ -52,20 +52,20 @@ def authorize(request, app_id: str, app_secret: str, grant_type: str):
     try:
         assert len(app_secret) > 0, "app_secret must exists"
         assert grant_type == "client_credential", "grant_type must equal client_credential"
-        app = App.objects.get(app_id=app_id.replace('esbid_', ''), app_secret=app_secret, is_active=True)
+        app = App.objects.get(app_id=app_id.replace(settings.PREFIX_ID, ''), app_secret=app_secret, is_active=True)
     except AssertionError as e:
         return 403, {"message": str(e)}
     except App.DoesNotExist:
-        return 403, {"message": "No Found"}
+        return 403, {"message": "Not Found"}
 
     # 作废之前的salt
-    app.salt = str(uuid.uuid4()).replace('-', '')[:8]
+    app.salt = uuid.uuid4().hex[:8]
     app.save()
-    data = {"app_id": str(app_id), "salt": app.salt}
+    data = {"app_id": app_id, "salt": app.salt}
 
     token_refresh = generate_jwt_token(data, expires_in=timedelta(days=30))
     token_access = generate_jwt_token(data, grant_type="access_token")
-    token_access.update({"refresh_token": token_refresh.get("access_token"), "app_id": str(app_id)})
+    token_access.update({"refresh_token": token_refresh.get("access_token"), "app_id": app_id})
 
     return 200, token_access
 
@@ -74,7 +74,7 @@ def authorize(request, app_id: str, app_secret: str, grant_type: str):
 def refresh_token(request, app_id: str, grant_type: str):
     """
 
-     使用刷新令牌进行更新获取权限令牌,请使用postman测试,header携带认证信息,后续会实现,refresh_token有效期为30天,请妥善保管,重新登录认证后,
+     使用刷新令牌进行更新获取权限令牌,请使用postman测试,header携带认证信息,后续会实现,refresh_token有效期为7天,请妥善保管,重新登录认证后,
      该token作废;
 
     :param request: 请求对象<br>
@@ -91,18 +91,18 @@ def refresh_token(request, app_id: str, grant_type: str):
     except AssertionError as e:
         return 403, {"message": str(e)}
     try:
-        app = App.objects.get(app_id=app_id.replace('esbid_', ''), is_active=True)
+        app = App.objects.get(app_id=app_id.replace(settings.PREFIX_ID, ''), is_active=True)
         assert request.user.username == app.salt, "app_secret or salt changed, please login again!"
     except App.DoesNotExist:
-        return 403, {"message": "No Found"}
+        return 403, {"message": "Not Found"}
     except AssertionError as e:
         return 403, {"message": str(e)}
 
-    data = {"app_id": str(app_id), "salt": app.salt}
+    data = {"app_id": app_id, "salt": app.salt}
 
     # 生成请求令牌
     token_access = generate_jwt_token(data, grant_type="access_token")
-    token_access.update({"app_id": str(app_id)})
+    token_access.update({"app_id": app_id})
 
     return 200, token_access
 

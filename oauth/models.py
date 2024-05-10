@@ -20,10 +20,10 @@ def app_secret_default():
 # Create your models here.
 class App(models.Model):
     app_id = models.CharField(max_length=7, default=app_id_default, db_comment="appid", editable=False)
-    app_secret = models.CharField(default=app_secret_default, max_length=128, db_comment="应用密钥",
+    app_secret = models.CharField(default=app_secret_default, max_length=32, db_comment="应用密钥",
                                   help_text="应用密钥")
     salt = models.CharField(default=salt_default, max_length=8, db_comment="盐", help_text="盐")
-    app_name = models.CharField("应用名称", max_length=64, db_comment="应用名称", help_text="应用名称")
+    app_name = models.CharField("应用名称", max_length=32, db_comment="应用名称", help_text="应用名称")
     app_en_name = models.CharField("应用英文名称", max_length=64, db_comment="应用英文名称", help_text="应用英文名称",
                                    null=True, blank=True)
     is_active = models.BooleanField("激活状态", default=True, db_comment="激活状态", help_text="激活状态", db_default=True)

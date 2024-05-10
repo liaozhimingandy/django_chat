@@ -6,9 +6,9 @@ from django.conf import settings
 
 # Create your models here.
 class Like(models.Model):
-    app_id = models.CharField(max_length=36, verbose_name="所属应用ID", db_comment="所属应用ID", help_text="所属应用ID")
-    post_id = models.CharField(max_length=36, verbose_name="内容ID", db_comment="内容ID", help_text="内容ID")
-    uid = models.CharField(max_length=36, verbose_name="赞的人", help_text="赞的人", db_comment="赞的人")
+    app_id = models.PositiveIntegerField(verbose_name="所属应用ID", db_comment="所属应用ID", help_text="所属应用ID")
+    post_id = models.PositiveBigIntegerField(verbose_name="内容ID", db_comment="内容ID", help_text="内容ID")
+    uid = models.PositiveBigIntegerField(verbose_name="赞的人", help_text="赞的人", db_comment="赞的人")
     gmt_created = models.DateTimeField(auto_now_add=True, help_text="创建日期时间", db_comment="创建日期时间",
                                        verbose_name="创建日期时间")
 
