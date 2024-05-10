@@ -11,12 +11,12 @@
 from ninja import NinjaAPI
 
 from oauth.api import router as oauth_router
-# from account.api import router as account_router
-# from comment.api import router as comment_router
-# from oauth.authentication import AuthBearer
-# from post.api import router as post_router
-# from post.api import router_image
-# from like.api import router as like_router
+from account.api import router as account_router
+from comment.api import router as comment_router
+from oauth.authentication import AuthBearer
+from post.api import router as post_router
+from post.api import router_image
+from like.api import router as like_router
 
 # todo: 上线时开启auth=AuthBearer()
 api = NinjaAPI(version='1.0.0', title='Chat API', description="内部接口文档",
@@ -29,11 +29,11 @@ api = NinjaAPI(version='1.0.0', title='Chat API', description="内部接口文�
         ])
 
 api.add_router("/oauth/", oauth_router)
-# api.add_router("/account/", account_router)
-# api.add_router("/comments/", comment_router)
-# api.add_router("/posts/", post_router)
-# api.add_router("/likes/", like_router)
-# api.add_router("/image/", router_image)
+api.add_router("/account/", account_router)
+api.add_router("/comments/", comment_router)
+api.add_router("/posts/", post_router)
+api.add_router("/likes/", like_router)
+api.add_router("/image/", router_image)
 
 
 if __name__ == "__main__":

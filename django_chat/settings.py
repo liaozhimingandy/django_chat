@@ -61,10 +61,10 @@ THIRD_PARTY_APPS = [
 
 # 本地app
 LOCAL_APPS = [
-    # "account",
-    # "post",
-    # "comment",
-    # "like",
+    "account",
+    "post",
+    "comment",
+    "like",
     "oauth"
     # Your stuff: custom apps go here
 ]
