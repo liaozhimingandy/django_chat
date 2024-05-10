@@ -5,7 +5,9 @@ services:
     image: ${APP_IMAGE}
 #    for producation,请注释command行即可
 #    for beta
-    command: python manage.py runserver 0.0.0.0:8000
+#    command: python manage.py runserver 0.0.0.0:8000
+#    for production
+#    command: gunicorn django_hip_service.wsgi:application -b 0.0.0.0:8000 --preload
     # 生产环境中请使用自动重启; always
     restart: unless-stopped
     ports:

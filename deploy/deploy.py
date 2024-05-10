@@ -81,12 +81,11 @@ class DeployBot:
         # docker构建镜像命令
         self._deploy_docker_image(image_name=image_name, dockerfile_path=dockerfile_path)
 
-        # 自动提交至阿里云镜像仓库
-        self._deploy_docker_push(image_name=image_name)
-
         # 更新.env变量
         self._deploy_docker_env(APP_IMAGE=image_name, APP_COMMIT_HASH=desc_git_hash)
 
+        # 自动提交至阿里云镜像仓库
+        self._deploy_docker_push(image_name=image_name)
 
         print(
             f"自动构建成功!version: {app_version}, revision: {desc_git_branch}-{desc_git_hash}, docker镜像: {image_name}\n")
@@ -95,6 +94,4 @@ class DeployBot:
 if __name__ == '__main__':
     bot = DeployBot()
     # 移除psycopg2,该包仅windows需要
-    # subprocess.check_output("pdm remove psycopg2")
     bot.deploy()
-    # subprocess.check_output("pdm add psycopg2")
