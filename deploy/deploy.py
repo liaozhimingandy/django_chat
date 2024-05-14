@@ -93,5 +93,4 @@ class DeployBot:
 
 if __name__ == '__main__':
     bot = DeployBot()
-    # 移除psycopg2,该包仅windows需要
     bot.deploy()

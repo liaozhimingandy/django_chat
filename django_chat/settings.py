@@ -28,11 +28,11 @@ SECRET_KEY = os.getenv(
 )
 
 # 应用版本号
-VERSION = (23, 0, 2, "alpha", 12)
+VERSION = (23, 0, 2, "alpha", 13)
 __version__ = get_version(VERSION)
 APP_NAME = "chat"
 # id前缀
-PREFIX_ID = "esbid_"
+PREFIX_ID = "cid_"
 
 with open(os.path.join(BASE_DIR, 'AppVersionHash.txt')) as fp:
     APP_COMMIT_HASH = fp.readline()
