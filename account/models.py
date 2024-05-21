@@ -63,6 +63,9 @@ class Account(models.Model):
     gmt_modified = models.DateTimeField(auto_now=True, help_text="最后修改时间", db_comment="最后修改时间",
                                         verbose_name="最后修改时间")
 
+    def __str__(self):
+        return f'{self.username}-{self.id}'
+
     def clean(self):
         if self.email is not None:
             # 如果字段不为空，检查其在表中是否已存在

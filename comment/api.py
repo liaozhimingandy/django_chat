@@ -73,8 +73,8 @@ def list_comment(request, app_id: str, post_id: str):
     return comments
 
 
-@router.delete("/{comment_id}/{account_id}/", response={204: None})
-def delete_comment(request, comment_id: str, account_id: str):
+@router.delete("/{comment_id}/", response={204: None})
+def delete_comment(request, comment_id: str):
     """
     删除指定的评论
     :param account_id:
@@ -83,7 +83,7 @@ def delete_comment(request, comment_id: str, account_id: str):
     :return:
     """
     if Comment.objects.filter(pk=comment_id).exists():
-        comment = Comment.objects.get(pk=comment_id, account_id=account_id)
+        comment = Comment.objects.get(pk=comment_id)
         comment.delete()
 
     return 204,

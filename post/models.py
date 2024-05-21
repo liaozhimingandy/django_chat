@@ -47,6 +47,9 @@ class Post(models.Model):
                             help_text="帖子所属应用", db_index=True)
     gmt_created = models.DateTimeField(auto_now_add=True, help_text="创建日期时间", db_comment="创建日期时间")
 
+    def __str__(self):
+        return f"{self.id}"
+
     # 表信息声明
     class Meta:
         # 设置数据库中表名

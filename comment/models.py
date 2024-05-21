@@ -22,6 +22,9 @@ class Comment(models.Model):
     gmt_created = models.DateTimeField(auto_now_add=True, help_text="创建日期时间", db_comment="创建日期时间",
                                        verbose_name="创建日期时间")
 
+    def __str__(self):
+        return f'{self.id}'
+
     # 表信息声明
     class Meta:
         db_table = f'{settings.APP_NAME}_comment'
