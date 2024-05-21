@@ -24,17 +24,21 @@ router_image = Router(tags=["image"])
 
 
 class PostSchemaIn(ModelSchema):
+
     class Meta:
         model = Post
-        fields = ['content', 'uid', 'from_device', 'right_status',
-                  'location', 'is_top', 'latitude', 'longitude', 'status', "app_id"]
-        fields_optional = ['right_status', "is_top", 'latitude', 'longitude', 'status', "app_id"]
+        fields = ['content', 'from_device', 'right_status', 'location', 'is_top', 'latitude', 'longitude', 'status',
+                  'app', 'account']
+        fields_optional = ['right_status', "is_top", 'latitude', 'longitude', 'status']
 
 
 class PostSchemaOut(ModelSchema):
+    app_id: str
+    account_id: str
+
     class Meta:
         model = Post
-        fields = "__all__"
+        exclude = ["app", "account"]
 
     @staticmethod
     def resolve_gmt_created(obj):
@@ -62,7 +66,10 @@ def create_post(request, payload: PostSchemaIn):
     :return:
     """
     payload_dict = payload.dict(exclude_unset=True)
-    payload_dict.update(**{"from_ip": request.META['REMOTE_ADDR']})
+    payload_dict.update(**{"from_ip": request.META['REMOTE_ADDR'], "account_id": payload_dict['account'],
+                           "app_id": payload_dict['app']})
+    payload_dict.pop('account')
+    payload_dict.pop('app')
     post = Post(**payload_dict)
     post.save()
 

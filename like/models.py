@@ -3,12 +3,18 @@ from django.db import models
 from django.db.models import UniqueConstraint
 from django.conf import settings
 
+from account.models import Account
+from oauth.models import App
+from post.models import Post
+
 
 # Create your models here.
 class Like(models.Model):
-    app_id = models.PositiveIntegerField(verbose_name="所属应用ID", db_comment="所属应用ID", help_text="所属应用ID")
-    post_id = models.PositiveBigIntegerField(verbose_name="内容ID", db_comment="内容ID", help_text="内容ID")
-    uid = models.PositiveBigIntegerField(verbose_name="赞的人", help_text="赞的人", db_comment="赞的人")
+    app = models.ForeignKey(App, on_delete=models.PROTECT, verbose_name="所属应用", db_comment="所属应用",
+                            help_text="所属应用")
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, verbose_name="内容", db_comment="内容", help_text="内容")
+    account = models.ForeignKey(Account, on_delete=models.SET_NULL, verbose_name="赞的人", help_text="赞的人",
+                                db_comment="赞的人", null=True, blank=True)
     gmt_created = models.DateTimeField(auto_now_add=True, help_text="创建日期时间", db_comment="创建日期时间",
                                        verbose_name="创建日期时间")
 
@@ -19,5 +25,5 @@ class Like(models.Model):
         verbose_name = "赞表"
         verbose_name_plural = verbose_name
         constraints = [
-            UniqueConstraint(fields=['app_id', 'post_id', 'uid'], name='uk_like')
+            UniqueConstraint(fields=['app', 'post', 'account'], name='uk_like')
         ]

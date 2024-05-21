@@ -11,7 +11,7 @@ def salt_default():
     return uuid.uuid4().hex[:8]
 
 
-def username_default():
+def userid_default():
     return uuid.uuid4().hex[:7]
 
 
@@ -26,8 +26,10 @@ class Account(models.Model):
     class AreaCodeChoices(models.TextChoices):
         CHN = ('CHN', '中国')
 
-    username = models.CharField(default=username_default, max_length=7, unique=True, db_comment="用户名",
-                                help_text="用户名", verbose_name="用户名", db_index=True, editable=False)
+    id = models.CharField(default=userid_default, max_length=7, primary_key=True, db_comment="用户ID",
+                          editable=False, verbose_name="用户ID")
+    username = models.CharField(max_length=7, unique=True, db_comment="用户名", help_text="用户名",
+                                verbose_name="用户名", db_index=True, editable=False)
     nick_name = models.CharField(max_length=64, db_comment="昵称", help_text="昵称", verbose_name="昵称")
     email = models.EmailField(db_comment="电子邮箱", help_text="电子邮箱", verbose_name="电子邮箱",
                               null=True, db_index=True)
@@ -79,6 +81,9 @@ class Account(models.Model):
         verbose_name_plural = verbose_name
 
     def save(self, *args, **kwargs):
+        # 判断user_name,是否存在,不存在则使用user_id
+        if not self.username and self._state.adding:
+            self.username = self.pk
         # 在保存之前先执行验证
         self.full_clean()
         super().save(*args, **kwargs)

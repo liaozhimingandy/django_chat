@@ -10,7 +10,7 @@ def salt_default():
 
 
 def app_id_default():
-    return uuid.uuid4().hex[:7]
+    return uuid.uuid4().hex[:5]
 
 
 def app_secret_default():
@@ -19,7 +19,7 @@ def app_secret_default():
 
 # Create your models here.
 class App(models.Model):
-    app_id = models.CharField(max_length=7, default=app_id_default, db_comment="appid", editable=False)
+    id = models.CharField(max_length=5, default=app_id_default, db_comment="appid", editable=False, primary_key=True)
     app_secret = models.CharField(default=app_secret_default, max_length=32, db_comment="应用密钥",
                                   help_text="应用密钥")
     salt = models.CharField(default=salt_default, max_length=8, db_comment="盐", help_text="盐")
@@ -33,7 +33,7 @@ class App(models.Model):
                                        db_comment="最后更新日期时间")
 
     def __str__(self):
-        return f"{self.app_name}-esbid_{self.app_id}"
+        return f"{self.app_name}-{settings.PREFIX_ID}{self.id}"
 
     class Meta:
         db_table = f"{settings.APP_NAME}_app"

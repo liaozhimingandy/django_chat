@@ -21,13 +21,17 @@ router = Router(tags=["comment"])
 class CommentSchemaIn(ModelSchema):
     class Meta:
         model = Comment
-        fields = ['is_root', 'pid', 'content', 'uid']
+        fields = ['is_root', 'parent', 'content', 'account', "post", "app"]
 
 
 class CommentSchemaOut(ModelSchema):
+    app_id: str
+    account_id: str
+    post_id: int
+
     class Meta:
         model = Comment
-        fields = "__all__"
+        exclude = ['account', "post", "app"]
 
     @staticmethod
     def resolve_gmt_created(obj):
@@ -35,37 +39,24 @@ class CommentSchemaOut(ModelSchema):
         return timezone.localtime(obj.gmt_created)
 
 
-@router.post("/{app_id}/{post_id}/", response=CommentSchemaOut)
-def create_comment(request, app_id: str, post_id: str, payload: CommentSchemaIn):
+@router.post("/", response=CommentSchemaOut)
+def create_comment(request, payload: CommentSchemaIn):
     """
     添加评论
     :param request:
-    :param app_id:
-    :param post_id:
     :param payload:
     :return:
     """
     payload_dict = payload.dict()
-    payload_dict.update(**{"app_id": app_id, "post_id": post_id})
+
+    payload_dict.update(**{"app_id": payload_dict["app"], "post_id": payload_dict["post"],
+                           "account_id": payload_dict["account"]})
+    payload_dict.pop("account")
+    payload_dict.pop("app")
+    payload_dict.pop("post")
     comment = Comment(**payload_dict)
     comment.save()
     return comment
-
-
-@router.delete("/{comment_id}/{uid}/", response={204: None})
-def delete_comment(request, comment_id: str, uid: str):
-    """
-    删除指定的评论
-    :param request:
-    :param comment_id:
-    :param uid:
-    :return:
-    """
-    if Comment.objects.filter(pk=comment_id).exists():
-        comment = Comment.objects.get(pk=comment_id)
-        comment.delete()
-
-    return 204,
 
 
 @router.get("/{app_id}/{post_id}/", response=List[CommentSchemaOut])
@@ -80,6 +71,22 @@ def list_comment(request, app_id: str, post_id: str):
     """
     comments = Comment.objects.filter(app_id=app_id, post_id=post_id).order_by("-id").all()
     return comments
+
+
+@router.delete("/{comment_id}/{account_id}/", response={204: None})
+def delete_comment(request, comment_id: str, account_id: str):
+    """
+    删除指定的评论
+    :param account_id:
+    :param request:
+    :param comment_id:
+    :return:
+    """
+    if Comment.objects.filter(pk=comment_id).exists():
+        comment = Comment.objects.get(pk=comment_id, account_id=account_id)
+        comment.delete()
+
+    return 204,
 
 
 @router.get("/{app_id}/{post_id}/count/")
