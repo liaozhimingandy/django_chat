@@ -7,10 +7,10 @@ from post.models import Post, Image
 # Register your models here.
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
-    list_display = ['id', 'account', 'content', 'gmt_created']
+    list_display = ['id', 'account_id', 'content', 'gmt_created']
     exclude = ['gmt_created', ]
     # 搜索
-    search_fields = ['account']
+    search_fields = ['account_id']
     # 分页 - 设置每页最大显示数目
     list_per_page = 10
 

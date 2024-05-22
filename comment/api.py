@@ -21,17 +21,14 @@ router = Router(tags=["comment"])
 class CommentSchemaIn(ModelSchema):
     class Meta:
         model = Comment
-        fields = ['is_root', 'parent', 'content', 'account', "post", "app"]
+        fields = ['is_root', 'parent_id', 'content', 'account_id', "post_id", "app_id"]
 
 
 class CommentSchemaOut(ModelSchema):
-    app_id: str
-    account_id: str
-    post_id: int
 
     class Meta:
         model = Comment
-        exclude = ['account', "post", "app"]
+        fields = "__all__"
 
     @staticmethod
     def resolve_gmt_created(obj):
@@ -49,11 +46,6 @@ def create_comment(request, payload: CommentSchemaIn):
     """
     payload_dict = payload.dict()
 
-    payload_dict.update(**{"app_id": payload_dict["app"], "post_id": payload_dict["post"],
-                           "account_id": payload_dict["account"]})
-    payload_dict.pop("account")
-    payload_dict.pop("app")
-    payload_dict.pop("post")
     comment = Comment(**payload_dict)
     comment.save()
     return comment
@@ -82,8 +74,8 @@ def delete_comment(request, comment_id: str):
     :param comment_id:
     :return:
     """
-    if Comment.objects.filter(pk=comment_id).exists():
-        comment = Comment.objects.get(pk=comment_id)
+    if Comment.objects.filter(comment_id=comment_id).exists():
+        comment = Comment.objects.get(comment_id=comment_id)
         comment.delete()
 
     return 204,

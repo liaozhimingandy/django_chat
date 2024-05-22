@@ -9,15 +9,17 @@
     @Desc: 
 ================================================="""
 
-from ninja import Router, Schema
+from ninja import Router, ModelSchema
 
 from like.models import Like
 
 router = Router(tags=["like"])
 
 
-class LikeSchema(Schema):
-    account_id: str
+class LikeSchema(ModelSchema):
+    class Meta:
+        model = Like
+        fields = ["account_id", ]
 
 
 @router.get("/{app_id}/{post_id}/{account_id}/")

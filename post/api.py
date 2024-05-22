@@ -28,17 +28,15 @@ class PostSchemaIn(ModelSchema):
     class Meta:
         model = Post
         fields = ['content', 'from_device', 'right_status', 'location', 'is_top', 'latitude', 'longitude', 'status',
-                  'app', 'account']
+                  'app_id', 'account_id']
         fields_optional = ['right_status', "is_top", 'latitude', 'longitude', 'status']
 
 
 class PostSchemaOut(ModelSchema):
-    app_id: str
-    account_id: str
 
     class Meta:
         model = Post
-        exclude = ["app", "account"]
+        fields = "__all__"
 
     @staticmethod
     def resolve_gmt_created(obj):
@@ -66,10 +64,7 @@ def create_post(request, payload: PostSchemaIn):
     :return:
     """
     payload_dict = payload.dict(exclude_unset=True)
-    payload_dict.update(**{"from_ip": request.META['REMOTE_ADDR'], "account_id": payload_dict['account'],
-                           "app_id": payload_dict['app']})
-    payload_dict.pop('account')
-    payload_dict.pop('app')
+    payload_dict.update(**{"from_ip": request.META['REMOTE_ADDR']})
     post = Post(**payload_dict)
     post.save()
 
