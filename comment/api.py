@@ -74,9 +74,7 @@ def delete_comment(request, comment_id: str):
     :param comment_id:
     :return:
     """
-    if Comment.objects.filter(comment_id=comment_id).exists():
-        comment = Comment.objects.get(comment_id=comment_id)
-        comment.delete()
+    Comment.objects.filter(comment_id=comment_id).delete()
 
     return 204,
 

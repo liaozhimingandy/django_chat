@@ -10,8 +10,8 @@ from post.models import Post
 
 # Create your models here.
 class Like(models.Model):
-    app_id = models.CharField(max_length=5, verbose_name="所属应用", db_comment="所属应用", help_text="所属应用")
-    post_id = models.PositiveBigIntegerField(verbose_name="内容", db_comment="内容", help_text="内容")
+    app_id = models.CharField(max_length=5, verbose_name="所属应用", db_comment="所属应用", help_text="所属应用", default='1')
+    post_id = models.UUIDField(verbose_name="帖子ID", db_comment="帖子ID", help_text="帖子ID")
     account_id = models.CharField(max_length=7, verbose_name="赞的人", help_text="赞的人",
                                   db_comment="赞的人", null=True, blank=True)
     gmt_created = models.DateTimeField(auto_now_add=True, help_text="创建日期时间", db_comment="创建日期时间",

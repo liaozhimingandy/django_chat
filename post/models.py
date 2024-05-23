@@ -23,6 +23,8 @@ class Post(models.Model):
     class ContentClassChoice(models.IntegerChoices):
         TextElem = (1, "普通")
 
+    post_id = models.UUIDField(help_text="帖子ID", db_comment='帖子ID', verbose_name="帖子ID", default=uuid.uuid4,
+                               editable=False)
     content = models.JSONField(help_text="内容", db_comment='内容', verbose_name="内容")
     account_id = models.CharField(max_length=7, help_text="用户ID", db_comment='用户ID',
                                   verbose_name="用户ID", null=True, blank=True)
@@ -44,7 +46,7 @@ class Post(models.Model):
                                     blank=True, verbose_name="纬度")
     status = models.SmallIntegerField("帖子状态", help_text="帖子状态", db_comment="帖子状态", default=0)
     app_id = models.CharField(max_length=5, db_comment="帖子所属应用", verbose_name="帖子所属应用",
-                              help_text="帖子所属应用", db_index=True)
+                              help_text="帖子所属应用", db_index=True, default='1')
     gmt_created = models.DateTimeField(auto_now_add=True, help_text="创建日期时间", db_comment="创建日期时间")
 
     def __str__(self):

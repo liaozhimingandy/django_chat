@@ -44,14 +44,15 @@ class PostSchemaOut(ModelSchema):
         return timezone.localtime(obj.gmt_created)
 
 
-@router.get("/lasted/", response=List[PostSchemaOut])
-def list_lasted_post(request):
+@router.get("/{app_id}/lasted/", response=List[PostSchemaOut])
+def list_lasted_post(request, app_id: str):
     """
     获取最近的十条帖子数据
+    :param app_id:
     :param request:
     :return:
     """
-    posts = Post.objects.order_by('-id')[:10]
+    posts = Post.objects.filter(app_id=app_id).order_by('-id')[:10]
     return posts
 
 
@@ -72,15 +73,14 @@ def create_post(request, payload: PostSchemaIn):
 
 
 @router.delete("/{post_id}/", response={204: None})
-def delete_post(request, post_id: int):
+def delete_post(request, post_id: str):
     """
     删除指定帖子
     :param request:
     :param post_id:
     :return:
     """
-    post = get_object_or_404(Post, pk=post_id)
-    post.delete()
+    Post.objects.filter(post_id=post_id).delete()
     return 204,
 
 
