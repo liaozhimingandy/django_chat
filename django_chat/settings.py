@@ -28,7 +28,7 @@ SECRET_KEY = os.getenv(
 )
 
 # 应用版本号
-VERSION = (23, 0, 2, "alpha", 17)
+VERSION = (23, 0, 2, "alpha", 18)
 __version__ = get_version(VERSION)
 APP_NAME = "chat"
 # id前缀

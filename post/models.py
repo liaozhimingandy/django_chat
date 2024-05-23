@@ -45,8 +45,6 @@ class Post(models.Model):
     longitude = models.DecimalField(max_digits=9, decimal_places=6, help_text="纬度", db_comment="纬度", null=True,
                                     blank=True, verbose_name="纬度")
     status = models.SmallIntegerField("帖子状态", help_text="帖子状态", db_comment="帖子状态", default=0)
-    app_id = models.CharField(max_length=5, db_comment="帖子所属应用", verbose_name="帖子所属应用",
-                              help_text="帖子所属应用", db_index=True, default='1')
     gmt_created = models.DateTimeField(auto_now_add=True, help_text="创建日期时间", db_comment="创建日期时间")
 
     def __str__(self):
@@ -63,8 +61,7 @@ class Post(models.Model):
 class Image(models.Model):
     image_name = models.CharField('图片名称', null=True, db_comment='图片名称', db_default='', max_length=128)
     image = models.ImageField("图片", upload_to='images')
-    image_md5 = models.CharField('图片md值', db_default='', max_length=32, db_comment="图片md值", unique=True,
-                                 null=True)
+    image_md5 = models.UUIDField('图片md值',  db_comment="图片md值", unique=True, null=True)
     gmt_created = models.DateTimeField('记录日期', auto_now_add=True, db_default=now())
 
     class Meta:

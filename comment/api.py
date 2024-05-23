@@ -21,7 +21,7 @@ router = Router(tags=["comment"])
 class CommentSchemaIn(ModelSchema):
     class Meta:
         model = Comment
-        fields = ['is_root', 'parent_id', 'content', 'account_id', "post_id", "app_id"]
+        fields = ['is_root', 'parent_id', 'content', 'account_id', "post_id"]
 
 
 class CommentSchemaOut(ModelSchema):
@@ -51,9 +51,9 @@ def create_comment(request, payload: CommentSchemaIn):
     return comment
 
 
-@router.get("/{app_id}/{post_id}/", response=List[CommentSchemaOut])
+@router.get("/{post_id}/", response=List[CommentSchemaOut])
 @paginate(LimitOffsetPagination)
-def list_comment(request, app_id: str, post_id: str):
+def list_comment(request, post_id: str):
     """
     分页返回评论列表
     :param request:
@@ -61,7 +61,7 @@ def list_comment(request, app_id: str, post_id: str):
     :param post_id:
     :return:
     """
-    comments = Comment.objects.filter(app_id=app_id, post_id=post_id).order_by("-id").all()
+    comments = Comment.objects.filter(post_id=post_id).order_by("-id").all()
     return comments
 
 
@@ -79,8 +79,8 @@ def delete_comment(request, comment_id: str):
     return 204,
 
 
-@router.get("/{app_id}/{post_id}/count/")
-def get_comment_count(request, app_id: str, post_id: str):
+@router.get("/{post_id}/count/")
+def get_comment_count(request, post_id: str):
     """
     获取指定帖子的评论数<br>
     :param request: <br>
@@ -88,7 +88,7 @@ def get_comment_count(request, app_id: str, post_id: str):
     :param post_id: 帖子ID<br>
     :return: <br>
     """
-    _count = Comment.objects.filter(app_id=app_id, post_id=post_id).count()
+    _count = Comment.objects.filter(post_id=post_id).count()
     return {"count": _count}
 
 

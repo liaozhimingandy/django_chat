@@ -12,7 +12,6 @@ from copy import deepcopy
 from typing import List
 
 from django.utils import timezone
-from django.shortcuts import get_object_or_404
 from ninja import Router, File, ModelSchema
 from ninja.files import UploadedFile
 
@@ -28,7 +27,7 @@ class PostSchemaIn(ModelSchema):
     class Meta:
         model = Post
         fields = ['content', 'from_device', 'right_status', 'location', 'is_top', 'latitude', 'longitude', 'status',
-                  'app_id', 'account_id']
+                  'account_id']
         fields_optional = ['right_status', "is_top", 'latitude', 'longitude', 'status']
 
 
@@ -44,15 +43,15 @@ class PostSchemaOut(ModelSchema):
         return timezone.localtime(obj.gmt_created)
 
 
-@router.get("/{app_id}/lasted/", response=List[PostSchemaOut])
-def list_lasted_post(request, app_id: str):
+@router.get("/lasted/", response=List[PostSchemaOut])
+def list_lasted_post(request):
     """
     获取最近的十条帖子数据
     :param app_id:
     :param request:
     :return:
     """
-    posts = Post.objects.filter(app_id=app_id).order_by('-id')[:10]
+    posts = Post.objects.order_by('-id')[:10]
     return posts
 
 

@@ -10,7 +10,6 @@ from post.models import Post
 
 # Create your models here.
 class Like(models.Model):
-    app_id = models.CharField(max_length=5, verbose_name="所属应用", db_comment="所属应用", help_text="所属应用", default='1')
     post_id = models.UUIDField(verbose_name="帖子ID", db_comment="帖子ID", help_text="帖子ID")
     account_id = models.CharField(max_length=7, verbose_name="赞的人", help_text="赞的人",
                                   db_comment="赞的人", null=True, blank=True)
@@ -24,5 +23,5 @@ class Like(models.Model):
         verbose_name = "赞表"
         verbose_name_plural = verbose_name
         constraints = [
-            UniqueConstraint(fields=['app_id', 'post_id', 'account_id'], name='uk_like')
+            UniqueConstraint(fields=['post_id', 'account_id'], name='uk_like')
         ]
