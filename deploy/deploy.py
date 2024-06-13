@@ -65,16 +65,20 @@ class DeployBot:
         cmd_git_hash = ["git", "rev-parse", "--short", "HEAD"]
         # 使用git命令获取当前分支
         cmd_git_branch = ["git", "rev-parse", "--abbrev-ref", "HEAD"]
+        # 使用git命令获取提交次数
+        cmd_git_count = ["git", "rev-list", "--count", "HEAD"]
 
         desc_git_hash = subprocess.check_output(cmd_git_hash).strip().decode('utf-8')
         desc_git_branch = subprocess.check_output(cmd_git_branch).strip().decode('utf-8')
+        desc_git_count = subprocess.check_output(cmd_git_count).strip().decode('utf-8')
 
         # 覆盖AppVersionHash文件
         with open('../AppVersionHash.txt', 'w') as fp:
             fp.writelines(desc_git_hash)
 
-        from django_chat import settings
-        app_version = settings.__version__
+        # from django_chat import settings
+        # app_version = settings.__version__
+        app_version = f'A{desc_git_count}'
         image_name = f"django_chat:{app_version}"
         dockerfile_path = Path(__file__).resolve().parent.parent
 
@@ -82,7 +86,7 @@ class DeployBot:
         self._deploy_docker_image(image_name=image_name, dockerfile_path=dockerfile_path)
 
         # 更新.env变量
-        self._deploy_docker_env(APP_IMAGE=image_name, APP_COMMIT_HASH=desc_git_hash)
+        self._deploy_docker_env(APP_IMAGE=image_name)
 
         # 自动提交至阿里云镜像仓库
         self._deploy_docker_push(image_name=image_name)

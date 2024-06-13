@@ -35,7 +35,7 @@ class PostSchemaOut(ModelSchema):
 
     class Meta:
         model = Post
-        fields = "__all__"
+        exclude = ["id"]
 
     @staticmethod
     def resolve_gmt_created(obj):

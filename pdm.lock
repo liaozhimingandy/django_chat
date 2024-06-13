@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.4.1"
-content_hash = "sha256:458a1e79dfd230de110da298dc606c49a236c464cc97332b09354086099eb6ce"
+content_hash = "sha256:a46b74aa6198fb95bfa9b6f99599da8b0203f9944b75a13ff163556710720ecf"
 
 [[package]]
 name = "annotated-types"
@@ -193,6 +193,17 @@ dependencies = [
 files = [
     {file = "django_ninja-1.1.0-py3-none-any.whl", hash = "sha256:6330c3497061d9fd1f43c1200f85c13aab7687110e2899f8304e5aa476c10b44"},
     {file = "django_ninja-1.1.0.tar.gz", hash = "sha256:87bff046416a2653ed2fbef1408e101292bf8170684821bac82accfd73bef059"},
+]
+
+[[package]]
+name = "django-ratelimit"
+version = "4.1.0"
+requires_python = ">=3.7"
+summary = "Cache-based rate-limiting for Django."
+groups = ["default"]
+files = [
+    {file = "django-ratelimit-4.1.0.tar.gz", hash = "sha256:555943b283045b917ad59f196829530d63be2a39adb72788d985b90c81ba808b"},
+    {file = "django_ratelimit-4.1.0-py2.py3-none-any.whl", hash = "sha256:d047a31cf94d83ef1465d7543ca66c6fc16695559b5f8d814d1b51df15110b92"},
 ]
 
 [[package]]

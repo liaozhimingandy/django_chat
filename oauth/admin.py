@@ -12,13 +12,13 @@ class AppAdmin(admin.ModelAdmin):
     readonly_fields = ["display_id", ]
 
     def display_id(self, obj):
-        return f"{settings.PREFIX_ID}{obj.id}"
+        return f"{settings.PREFIX_ID}{obj.app_id}"
 
     def get_list_display(self, request):
         """返回要显示的字段列表"""
         list_display = ["display_id", ]
         for field in App._meta.fields:
-            if field.name in ("id", ):
+            if field.name in ("id", "app_id"):
                 continue
             list_display.append(field.name)
         return list_display

@@ -28,6 +28,9 @@ RUN mkdir /opt/app
 COPY . /opt/app
 
 WORKDIR /opt/app
+
+EXPOSE 8000
+
 # command
 CMD ["gunicorn", "django_chat.wsgi:application", "-c", "/opt/app/config/gunicorn.py"]
 

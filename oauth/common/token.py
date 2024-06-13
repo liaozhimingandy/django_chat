@@ -44,7 +44,7 @@ def generate_jwt_token(data: dict, expires_in: timedelta = timedelta(hours=2),
     # jwt.encode()对声明集进行编码并返回 JWT 字符串。
     token = jwt.encode(payload, key=settings.SECRET_KEY, algorithm='HS256')
 
-    return {"access_token": token, "expires_in": expires_in.seconds, "token_type": "bearer", "scop": "all"}
+    return {"access_token": token, "expires_in": int(expires_in.total_seconds()), "token_type": "Bearer", "scop": "all"}
 
 
 def verify_jwt_token(data: str, grant_type: str = "client_credential") -> dict:

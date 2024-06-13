@@ -11,6 +11,7 @@ import uuid
 from datetime import timedelta
 from typing import Optional
 from django.conf import settings
+from django_ratelimit.decorators import ratelimit
 from ninja import Router, Schema
 
 from oauth.authentication import AuthBearer
@@ -23,13 +24,17 @@ router = Router(tags=["oauth"])
 class AccessTokenSchema(Schema):
     access_token: str
     expires_in: int
-    token_type: str = 'bearer'
+    token_type: str = 'Bearer'
     scop: str
     app_id: Optional[str] = None
 
 
-class RefreshTokenSchema(AccessTokenSchema):
-    refresh_token: Optional[str] = None
+class RefreshTokenSchema(Schema):
+    refresh_token: str
+    expires_in: int
+    token_type: str = 'Bearer'
+    scop: str
+    app_id: Optional[str] = None
 
 
 class Error(Schema):
@@ -37,6 +42,8 @@ class Error(Schema):
 
 
 @router.get("/authorize/{app_id}/{app_secret}/{grant_type}/", auth=None, response={200: RefreshTokenSchema, 403: Error})
+# 可使用api网关代替
+@ratelimit(key="ip", rate="1/m", block=True)
 def authorize(request, app_id: str, app_secret: str, grant_type: str):
     """
 
@@ -63,14 +70,14 @@ def authorize(request, app_id: str, app_secret: str, grant_type: str):
     app.save()
     data = {"app_id": app_id, "salt": app.salt}
 
-    token_refresh = generate_jwt_token(data, expires_in=timedelta(days=30))
-    token_access = generate_jwt_token(data, grant_type="access_token")
-    token_access.update({"refresh_token": token_refresh.get("access_token"), "app_id": app_id})
-
-    return 200, token_access
+    token_refresh = generate_jwt_token(data, expires_in=timedelta(days=7), grant_type=grant_type)
+    # token_access = generate_jwt_token(data, grant_type="access_token")
+    token_refresh.update(**{"app_id": app_id, "refresh_token": token_refresh.get("access_token", None)})
+    return 200, token_refresh
 
 
 @router.get("/refresh-token/{app_id}/{grant_type}/", auth=AuthBearer(), response={200: AccessTokenSchema, 403: Error})
+@ratelimit(key="ip", rate="5/m", block=True)
 def refresh_token(request, app_id: str, grant_type: str):
     """
 
@@ -102,12 +109,12 @@ def refresh_token(request, app_id: str, grant_type: str):
 
     # 生成请求令牌
     token_access = generate_jwt_token(data, grant_type="access_token")
-    token_access.update({"app_id": app_id})
+    token_access.update(**{"app_id": app_id})
 
     return 200, token_access
 
 
-@router.get("test-oauth/",auth=AuthBearer())
+@router.get("test-oauth/", auth=AuthBearer())
 def test_oauth(request):
     return 200, {"message": "hello word"}
 

@@ -28,7 +28,7 @@ class CommentSchemaOut(ModelSchema):
 
     class Meta:
         model = Comment
-        fields = "__all__"
+        exclude = ["id"]
 
     @staticmethod
     def resolve_gmt_created(obj):

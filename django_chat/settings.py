@@ -32,7 +32,7 @@ VERSION = (23, 0, 2, "alpha", 18)
 __version__ = get_version(VERSION)
 APP_NAME = "chat"
 # id前缀
-PREFIX_ID = "cid_"
+PREFIX_ID = os.getenv("PREFIX_ID", "cid_")
 
 with open(os.path.join(BASE_DIR, 'AppVersionHash.txt')) as fp:
     APP_COMMIT_HASH = fp.readline()
@@ -151,7 +151,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = os.getenv('APP_LANGUAGE_CODE', 'zh-hans')
 
-TIME_ZONE = os.getenv('APP_TIME_ZONE', 'Asia/Shanghai') # 设置为中国上海时区，即北京时间
+TIME_ZONE = os.getenv('APP_TIME_ZONE', 'Asia/Shanghai')  # 设置为中国上海时区，即北京时间
 
 USE_I18N = True
 
@@ -207,3 +207,4 @@ DEFAULT_FILE_STORAGE = 'post.MyStorage.MinioStorage'
 NINJA_PAGINATION_PER_PAGE = 10  # 默认页面大小
 NINJA_PAGINATION_MAX_LIMIT = 10  # 每页的最大结果数
 ##########################################################################################
+
