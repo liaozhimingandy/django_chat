@@ -78,7 +78,7 @@ class DeployBot:
 
         # from django_chat import settings
         # app_version = settings.__version__
-        app_version = f'A{desc_git_count}'
+        app_version = f'a{desc_git_count}'
         image_name = f"django_chat:{app_version}"
         dockerfile_path = Path(__file__).resolve().parent.parent
 

@@ -1,6 +1,5 @@
 from django.contrib import admin
 
-from account.models import Account
 from django.conf import settings
 
 from account.models import Account

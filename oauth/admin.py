@@ -9,7 +9,7 @@ from oauth.models import App
 class AppAdmin(admin.ModelAdmin):
     list_display_links = ["display_id", ]
     # list_display = [field.name for field in App._meta.fields]
-    readonly_fields = ["display_id", ]
+    readonly_fields = ["salt"]
 
     def display_id(self, obj):
         return f"{settings.PREFIX_ID}{obj.app_id}"

@@ -43,7 +43,7 @@ class Error(Schema):
 
 @router.get("/authorize/{app_id}/{app_secret}/{grant_type}/", auth=None, response={200: RefreshTokenSchema, 403: Error})
 # 可使用api网关代替
-@ratelimit(key="ip", rate="1/m", block=True)
+@ratelimit(key="ip", rate="3/m", block=True)
 def authorize(request, app_id: str, app_secret: str, grant_type: str):
     """
 
@@ -77,7 +77,7 @@ def authorize(request, app_id: str, app_secret: str, grant_type: str):
 
 
 @router.get("/refresh-token/{app_id}/{grant_type}/", auth=AuthBearer(), response={200: AccessTokenSchema, 403: Error})
-@ratelimit(key="ip", rate="5/m", block=True)
+@ratelimit(key="ip", rate="10/m", block=True)
 def refresh_token(request, app_id: str, grant_type: str):
     """
 
@@ -105,7 +105,7 @@ def refresh_token(request, app_id: str, grant_type: str):
     except AssertionError as e:
         return 403, {"message": str(e)}
 
-    data = {"app_id": app_id, "salt": app.salt}
+    data = {"app_id": app_id, "salt": app.salt, "jwt_app_id": app_id}
 
     # 生成请求令牌
     token_access = generate_jwt_token(data, grant_type="access_token")
