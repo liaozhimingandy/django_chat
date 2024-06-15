@@ -17,11 +17,12 @@ jobs:
           python-version: 3.x
 
       - name: Get Commit Count
+        id: get_commit_count
         run: |
-            commit_count=$(git rev-list --count main)
+            commit_count=$(git rev-list --count HEAD)
             echo "Commit Count: $commit_count"
             # 输出变量到下一步使用
-            echo "::set-output name=commit_count::$commit_count"
+            echo "commit_count=$commit_count" >> $GITHUB_ENV
 
       - name: Build the Docker image
         run: |
@@ -29,6 +30,6 @@ jobs:
           # 登录阿里云镜像仓库
           docker login --username=${{ secrets.DOCKER_USERNAME }} --password=${{ secrets.DOCKER_PASSWORD }} registry.cn-hangzhou.aliyuncs.com
           # 使用Dockerfile构建镜像
-          docker build . --file Dockerfile --tag registry.cn-hangzhou.aliyuncs.com/liaozhiming/django_chat:a${{ steps.get_commit_count.outputs.commit_count }}
+          docker build . --file Dockerfile --tag registry.cn-hangzhou.aliyuncs.com/liaozhiming/django_chat:a${{ env.commit_count }}
           # 推送镜像到镜像仓库
-          docker push registry.cn-hangzhou.aliyuncs.com/liaozhiming/django_chat:a${{ steps.get_commit_count.outputs.commit_count }}
+          docker push registry.cn-hangzhou.aliyuncs.com/liaozhiming/django_chat:a${{ env.commit_count }}
