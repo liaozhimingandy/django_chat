@@ -1,0 +1,35 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 配置Python编译器
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.x
+
+      - name: Get Commit Count
+        run: |
+            commit_count=$(git rev-list --count main)
+            echo "Commit Count: $commit_count"
+            # 输出变量到下一步使用
+            echo "::set-output name=commit_count::$commit_count"
+
+      - name: Build the Docker image
+        run: |
+          docker version
+          # 登录阿里云镜像仓库
+          docker login --username=${{ secrets.DOCKER_USERNAME }} --password=${{ secrets.DOCKER_PASSWORD }} registry.cn-hangzhou.aliyuncs.com
+          cd django_chat
+          # 使用Dockerfile构建镜像
+          docker build . --file Dockerfile --tag registry.cn-hangzhou.aliyuncs.com/liaozhiming/django_chat:a${{ steps.get_commit_count.outputs.commit_count }}
+          # 推送镜像到镜像仓库
+          docker push registry.cn-hangzhou.aliyuncs.com/liaozhiming/django_chat:a${{ steps.get_commit_count.outputs.commit_count }}
