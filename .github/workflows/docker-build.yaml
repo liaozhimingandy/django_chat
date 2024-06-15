@@ -2,8 +2,8 @@ name: Docker Image CI
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - 'v*' # 仅当推送的标签匹配 v* 模式时触发
 
 jobs:
   build:
@@ -25,13 +25,19 @@ jobs:
           repo_name=${GITHUB_REPOSITORY##*/}
           echo "repo_name=$repo_name" >> $GITHUB_ENV
 
-      - name: Get Commit Count
-        id: get_commit_count
+      - name: Get latest tag
+        id: get_latest_tag
         run: |
-            commit_count=$(git rev-list --count HEAD)
-            echo "Commit Count: $commit_count"
-            # 输出变量到下一步使用
-            echo "commit_count=$commit_count" >> $GITHUB_ENV
+          latest_tag=$(git describe --tags --abbrev=0)
+          echo "Latest tag: $latest_tag"
+          echo "latest_tag=$latest_tag" >> $GITHUB_ENV
+
+      - name: Remove 'v' prefix from tag
+        id: remove_v_prefix
+        run: |
+          tag_without_v=${{ env.latest_tag#v }}
+          echo "Tag without 'v': $tag_without_v"
+          echo "tag_without_v=$tag_without_v" >> $GITHUB_ENV
 
       - name: Build the Docker image
         run: |
@@ -39,6 +45,6 @@ jobs:
           # 登录阿里云镜像仓库
           docker login --username=${{ secrets.DOCKER_USERNAME }} --password=${{ secrets.DOCKER_PASSWORD }} registry.cn-hangzhou.aliyuncs.com
           # 使用Dockerfile构建镜像
-          docker build . --file Dockerfile --tag registry.cn-hangzhou.aliyuncs.com/liaozhiming/${{ env.repo_name }}:a${{ env.commit_count }}
+          docker build . --file Dockerfile --tag registry.cn-hangzhou.aliyuncs.com/liaozhiming/${{ env.repo_name }}:a${{ env.$tag_without_v }}
           # 推送镜像到镜像仓库
-          docker push registry.cn-hangzhou.aliyuncs.com/liaozhiming/${{ env.repo_name }}:a${{ env.commit_count }}
+          docker push registry.cn-hangzhou.aliyuncs.com/liaozhiming/${{ env.repo_name }}:a${{ env.$tag_without_v }}
