@@ -1,6 +1,5 @@
 from django.contrib import admin
 
-from django_chat import settings
 from post.models import Post, Image
 
 
@@ -19,5 +18,3 @@ class PostAdmin(admin.ModelAdmin):
 class ImageAdmin(admin.ModelAdmin):
     list_display = ["id", 'image_name', "image_md5", 'gmt_created']
 
-
-admin.AdminSite.site_header = format(f'后台管理|{settings.APP_COMMIT_HASH}')

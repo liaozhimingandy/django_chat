@@ -17,16 +17,21 @@ from django.contrib import admin
 from django.urls import path, re_path, include
 from django.conf.urls.static import static
 from django.conf import settings
-from .api import api
 
-from post import urls as moment_urls
+from post import urls as post_urls
+from account import urls as account_urls
 
 urlpatterns = [
+    # django 后台相关路由
     path('admin/doc/', include('django.contrib.admindocs.urls')),
     path('admin/', admin.site.urls, name="admin"),
-    re_path('^post/', include((moment_urls, 'post'), namespace='post')),
+    # 账号相关路由
+    re_path('^auth/', include(account_urls, namespace='auth')),
     # re_path('^oauth/', include((oauth_urls, 'oauth'), namespace='oauth')),
-    path('', api.urls)
+    # 帖子相关路由
+    re_path('^v2/', include(post_urls, namespace='v2')),
+    # drf 框架认证路由
+    path('api-auth/', include('rest_framework.urls')),
 ]
 
 # 开发环境提供静态文件和多媒体查看功能;这一般会在 DEBUG is set to True 情况下由 runserver 自动完成

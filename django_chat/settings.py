@@ -15,6 +15,7 @@ import os
 from pathlib import Path
 
 from django import get_version
+from django.utils.html import format_html
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -57,15 +58,13 @@ DJANGO_APPS = [
 # 第三方app
 THIRD_PARTY_APPS = [
     'corsheaders',  # 添加：跨域组件
+    'rest_framework', # drf 框架
 ]
 
 # 本地app
 LOCAL_APPS = [
     "account",
     "post",
-    "comment",
-    "like",
-    "oauth"
     # Your stuff: custom apps go here
 ]
 
@@ -208,3 +207,55 @@ NINJA_PAGINATION_PER_PAGE = 10  # 默认页面大小
 NINJA_PAGINATION_MAX_LIMIT = 10  # 每页的最大结果数
 ##########################################################################################
 
+# 后台界面配置
+from django.contrib import admin
+
+admin.AdminSite.site_title = format(f"{APP_NAME}后台管理")
+admin.AdminSite.site_header = format_html(f'{APP_NAME}后台管理 | <span style="color:white"> {__version__}</span>')
+
+
+##########################################################################################
+# DRF 配置
+REST_FRAMEWORK = {
+    # 全局的认证类 (authentication classes)
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+    # 全局的权限类 (permission classes)
+    # 'DEFAULT_PERMISSION_CLASSES': [
+    #     'rest_framework.permissions.AllowAny',
+    # ],
+    # 分页设置 (pagination settings)
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10,
+    # 全局的渲染器 (renderer classes)
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    ],
+    # 全局的解析器 (parser classes)
+    'DEFAULT_PARSER_CLASSES': [
+        'rest_framework.parsers.JSONParser',
+        'rest_framework.parsers.FormParser',
+        'rest_framework.parsers.MultiPartParser',
+    ],
+    # 限流设置 (throttling settings)
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle',
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '10000/day',
+        'user': '100000/day'
+    },
+    # 全局的过滤类 (filter classes)
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend',
+        'rest_framework.filters.OrderingFilter',
+        'rest_framework.filters.SearchFilter',
+    ],
+    # 异常处理
+    # 'EXCEPTION_HANDLER': 'rest_framework.views.exception_handler',
+}
+##########################################################################################
