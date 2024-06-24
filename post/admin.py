@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from post.models import Post, Image
+from post.models import Post, Image, Comment, Like
 
 
 # Register your models here.
@@ -17,4 +17,15 @@ class PostAdmin(admin.ModelAdmin):
 @admin.register(Image)
 class ImageAdmin(admin.ModelAdmin):
     list_display = ["id", 'image_name', "image_md5", 'gmt_created']
+
+
+@admin.register(Comment)
+class CommentAdmin(admin.ModelAdmin):
+    list_display = ('id', "account_id", "content", "post_id", "is_root")
+    list_per_page = 10
+
+@admin.register(Like)
+class LikeAdmin(admin.ModelAdmin):
+    list_display = [field.name for field in Like._meta.fields]
+    list_per_page = 10
 

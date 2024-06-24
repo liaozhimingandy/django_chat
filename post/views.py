@@ -132,7 +132,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['get'], url_path=r'posts/(?P<post_id>[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-['
                                                     r'0-9a-fA-F]{4}-[0-9a-fA-F]{12})')
-    def get_comments_by_post_id(self, request, post_id: str):
+    def get_comments_by_post_id(self, request, post_id: uuid):
         queryset = Comment.objects.filter(post_id=post_id).all().order_by("-id")
         # 实例化分页类
         paginator = StandardResultsSetPagination()
