@@ -6,12 +6,12 @@
     @Author：liaozhimingandy
     @Email: liaozhimingandy@gmail.com
     @Date：2024-04-18 15:35
-    @Desc: 
+    @Desc:
 ================================================="""
 
-from ninja import Router, ModelSchema
+from ninja import ModelSchema, Router
 
-from like.models import Like
+from post.models import Like
 
 router = Router(tags=["like"])
 

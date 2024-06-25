@@ -32,7 +32,7 @@ def generate_jwt_token(data: dict, expires_in: timedelta = timedelta(hours=2),
         "jti": str(uuid.uuid4()).replace('-', ''),
         "iat": datetime.utcnow(),
         "nbf": datetime.utcnow(),
-        "exp": datetime.utcnow() + expires_in,
+        "exp": datetime.utcnow() + expires_in + timedelta(minutes=30),
         "grant_type": grant_type,
         "version": "2.0",
         "type": "Production"

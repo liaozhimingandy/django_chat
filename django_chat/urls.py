@@ -19,14 +19,11 @@ from django.conf.urls.static import static
 from django.conf import settings
 from .api import api
 
-from post import urls as moment_urls
 
 urlpatterns = [
     path('admin/doc/', include('django.contrib.admindocs.urls')),
     path('admin/', admin.site.urls, name="admin"),
-    re_path('^post/', include((moment_urls, 'post'), namespace='post')),
-    # re_path('^oauth/', include((oauth_urls, 'oauth'), namespace='oauth')),
-    path('', api.urls)
+    path('v3/', api.urls)
 ]
 
 # 开发环境提供静态文件和多媒体查看功能;这一般会在 DEBUG is set to True 情况下由 runserver 自动完成

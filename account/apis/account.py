@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """=================================================
     @Project: settings.py
-    @File： api.py
+    @File： account.py
     @Author：liaozhimingandy
     @Email: liaozhimingandy@gmail.com
     @Date：2024-04-18 15:35
@@ -15,8 +15,8 @@ from django.utils import timezone
 
 from account.models import Account
 
+# from account.api import router_account as router
 router = Router(tags=["account"])
-
 
 class AccountSchemaIn(ModelSchema):
     class Meta:

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """=================================================
     @Project: settings.py
-    @File： api.py
+    @File： account.py
     @Author：liaozhimingandy
     @Email: liaozhimingandy@gmail.com
     @Date：2024-04-18 15:35
@@ -12,7 +12,7 @@ from copy import deepcopy
 from typing import List
 
 from django.utils import timezone
-from ninja import Router, File, ModelSchema
+from ninja import File, ModelSchema, Router
 from ninja.files import UploadedFile
 
 from post.lib.utils import get_uploaded_file_md5
@@ -23,7 +23,6 @@ router_image = Router(tags=["image"])
 
 
 class PostSchemaIn(ModelSchema):
-
     class Meta:
         model = Post
         fields = ['content', 'from_device', 'right_status', 'location', 'is_top', 'latitude', 'longitude', 'status',
@@ -32,7 +31,6 @@ class PostSchemaIn(ModelSchema):
 
 
 class PostSchemaOut(ModelSchema):
-
     class Meta:
         model = Post
         exclude = ["id"]

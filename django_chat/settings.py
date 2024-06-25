@@ -15,6 +15,7 @@ import os
 from pathlib import Path
 
 from django import get_version
+from django.utils.html import format_html
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -28,14 +29,11 @@ SECRET_KEY = os.getenv(
 )
 
 # 应用版本号
-VERSION = (23, 0, 2, "alpha", 18)
+VERSION = (3, 0, 1, "alpha", 1)
 __version__ = get_version(VERSION)
 APP_NAME = "chat"
 # id前缀
 PREFIX_ID = os.getenv("PREFIX_ID", "cid_")
-
-with open(os.path.join(BASE_DIR, 'AppVersionHash.txt')) as fp:
-    APP_COMMIT_HASH = fp.readline()
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = int(os.getenv("APP_DEBUG", 1))
@@ -63,9 +61,6 @@ THIRD_PARTY_APPS = [
 LOCAL_APPS = [
     "account",
     "post",
-    "comment",
-    "like",
-    "oauth"
     # Your stuff: custom apps go here
 ]
 
@@ -208,3 +203,6 @@ NINJA_PAGINATION_PER_PAGE = 10  # 默认页面大小
 NINJA_PAGINATION_MAX_LIMIT = 10  # 每页的最大结果数
 ##########################################################################################
 
+from django.contrib import admin
+
+admin.AdminSite.site_header = format_html(f'{APP_NAME}后台管理 | <span style="color:white"> {__version__}</span>')

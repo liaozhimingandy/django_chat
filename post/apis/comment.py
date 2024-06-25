@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """=================================================
     @Project: settings.py
-    @File： api.py
+    @File： account.py
     @Author：liaozhimingandy
     @Email: liaozhimingandy@gmail.com
     @Date：2024-04-18 15:35
@@ -13,7 +13,7 @@ from django.utils import timezone
 from ninja import Router, ModelSchema
 from ninja.pagination import paginate, LimitOffsetPagination
 
-from comment.models import Comment
+from post.models import Comment
 
 router = Router(tags=["comment"])
 

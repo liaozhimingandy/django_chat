@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """=================================================
     @Project: settings.py
-    @File： api.py
+    @File： account.py
     @Author：liaozhimingandy
     @Email: liaozhimingandy@gmail.com
     @Date：2024-04-12 10:20
@@ -12,14 +12,13 @@ from datetime import timedelta
 from typing import Optional
 from django.conf import settings
 from django_ratelimit.decorators import ratelimit
-from ninja import Router, Schema
+from ninja import Schema, Router
 
-from oauth.authentication import AuthBearer
-from oauth.common.token import generate_jwt_token
-from oauth.models import App
+from account.authentication import AuthBearer
+from account.common.token import generate_jwt_token
+from account.models import App
 
 router = Router(tags=["oauth"])
-
 
 class AccessTokenSchema(Schema):
     access_token: str
