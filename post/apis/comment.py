@@ -51,7 +51,7 @@ def create_comment(request, payload: CommentSchemaIn):
     return comment
 
 
-@router.get("/{post_id}/", response=List[CommentSchemaOut])
+@router.get("/posts/{post_id}/", response=List[CommentSchemaOut])
 @paginate(LimitOffsetPagination)
 def list_comment(request, post_id: str):
     """
@@ -69,7 +69,6 @@ def list_comment(request, post_id: str):
 def delete_comment(request, comment_id: str):
     """
     删除指定的评论
-    :param account_id:
     :param request:
     :param comment_id:
     :return:
@@ -79,7 +78,7 @@ def delete_comment(request, comment_id: str):
     return 204,
 
 
-@router.get("/{post_id}/count/")
+@router.get("posts/{post_id}/count/")
 def get_comment_count(request, post_id: str):
     """
     获取指定帖子的评论数<br>

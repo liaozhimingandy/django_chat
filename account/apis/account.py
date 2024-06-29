@@ -8,9 +8,13 @@
     @Date：2024-04-18 15:35
     @Desc: 
 ================================================="""
+from django.core.exceptions import ValidationError
+from django.contrib.auth.hashers import make_password, check_password
+from django.conf import settings
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
-from ninja import Router, ModelSchema
+from ninja import Router, ModelSchema, Schema
+from ninja.responses import codes_2xx, codes_4xx
 from django.utils import timezone
 
 from account.models import Account
@@ -18,12 +22,17 @@ from account.models import Account
 # from account.api import router_account as router
 router = Router(tags=["account"])
 
+
 class AccountSchemaIn(ModelSchema):
     class Meta:
         model = Account
         fields = ['nick_name', 'email', 'gmt_birth', 'mobile', 'sex', 'avatar', 'password',
                   'allow_beep', 'allow_vibration']
         fields_optional = ["email", "gmt_birth", "mobile", 'sex', 'avatar', 'allow_beep', 'allow_vibration', 'password']
+
+
+class MessageSchemaOut(Schema):
+    message: str
 
 
 class AccountSchemaOut(ModelSchema):
@@ -44,16 +53,14 @@ class AccountSchemaOut(ModelSchema):
         return timezone.localtime(obj.gmt_modified)
 
 
-class AccountPassword(ModelSchema):
+class AccountPasswordIn(Schema):
+    username: str
     current_password: str = None
-
-    class Meta:
-        model = Account
-        fields = ["username", "password"]
+    password: str
 
 
-@router.post("/register/", response=AccountSchemaOut)
-def create_account_(request, payload: AccountSchemaIn):
+@router.post("/register/", response={codes_2xx: AccountSchemaOut, codes_4xx: MessageSchemaOut})
+def create_account(request, payload: AccountSchemaIn):
     """
     用户注册
     :param request:
@@ -61,13 +68,17 @@ def create_account_(request, payload: AccountSchemaIn):
     :return:
     """
     payload_dict = payload.dict(exclude_unset=True)
-    account = Account(**payload_dict)
-    account.save()
-    return account
+    try:
+        account = Account(**payload_dict)
+        account.save()
+    except ValidationError as e:
+        return 400, {"message": str(e)}
+    else:
+        return 200, account
 
 
-@router.post("/password/change/", response=AccountSchemaOut)
-def password_change(request, payload: AccountPassword):
+@router.post("/password/change/", response={codes_2xx: AccountSchemaOut, codes_4xx: MessageSchemaOut})
+def password_change(request, payload: AccountPasswordIn):
     """
     密码修改
     :param request:
@@ -75,14 +86,20 @@ def password_change(request, payload: AccountPassword):
     :return:
     """
     payload_dict = payload.dict()
-    account = get_object_or_404(Account, username=payload_dict["username"], password=payload_dict["current_password"])
-    account.password = payload_dict["password"]
+    account = get_object_or_404(Account, username=payload_dict["username"].replace(settings.PREFIX_ID, ''), )
+    try:
+        # 检查密码
+        assert check_password(payload_dict["current_password"], account.password), "Current password is incorrect."
+    except AssertionError as e:
+        return 400, {"message": str(e)}
+    # 设置密码
+    account.password = make_password(payload_dict["password"])
     account.save()
     return account
 
 
 @router.post("/password/reset/", response=AccountSchemaOut)
-def password_reset(request, payload: AccountPassword):
+def password_reset(request, payload: AccountPasswordIn):
     """
     密码重置
     :param request:
@@ -90,8 +107,9 @@ def password_reset(request, payload: AccountPassword):
     :return:
     """
     payload_dict = payload.dict()
-    account = get_object_or_404(Account, username=payload_dict["username"])
-    account.password = payload_dict["password"]
+    account = get_object_or_404(Account, username=payload_dict["username"].replace(settings.PREFIX_ID, ''))
+    # 设置密码
+    account.password = make_password(payload_dict["password"])
     account.save()
     return account
 

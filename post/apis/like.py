@@ -22,12 +22,11 @@ class LikeSchema(ModelSchema):
         fields = ["account_id", ]
 
 
-@router.get("/{post_id}/{account_id}/")
+@router.get("/{post_id}/{account_id}/count/")
 def get_likes(request, post_id: str, account_id: str):
     """
     获取点赞数
     :param request:
-    :param app_id: 应用ID
     :param post_id: 帖子ID
     :param account_id: 当前用户
     :return:
@@ -41,10 +40,9 @@ def get_likes(request, post_id: str, account_id: str):
 def delete_like(request, post_id: str, account_id: str):
     """
     取消点赞
-    :param account_id:
+    :param account_id: 当前用户
     :param request:
-    :param app_id:
-    :param post_id:
+    :param post_id: 帖子ID
     :return:
     """
     Like.objects.filter(post_id=post_id, account_id=account_id).delete()
@@ -58,7 +56,6 @@ def create_like(request, post_id: str, payload: LikeSchema):
     """
     点赞
     :param request:
-    :param app_id:
     :param post_id:
     :param payload:
     :return:

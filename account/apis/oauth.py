@@ -20,20 +20,20 @@ from account.models import App
 
 router = Router(tags=["oauth"])
 
-class AccessTokenSchema(Schema):
+
+class TokenSchema(Schema):
+    app_id: Optional[str] = None
+    token_type: str = 'Bearer'
+    expires_in: int
+    scop: str
+
+
+class AccessTokenSchema(TokenSchema):
     access_token: str
-    expires_in: int
-    token_type: str = 'Bearer'
-    scop: str
-    app_id: Optional[str] = None
 
 
-class RefreshTokenSchema(Schema):
+class RefreshTokenSchema(TokenSchema):
     refresh_token: str
-    expires_in: int
-    token_type: str = 'Bearer'
-    scop: str
-    app_id: Optional[str] = None
 
 
 class Error(Schema):
@@ -42,7 +42,7 @@ class Error(Schema):
 
 @router.get("/authorize/{app_id}/{app_secret}/{grant_type}/", auth=None, response={200: RefreshTokenSchema, 403: Error})
 # 可使用api网关代替
-@ratelimit(key="ip", rate="3/m", block=True)
+@ratelimit(key="ip", rate="5/m", block=True)
 def authorize(request, app_id: str, app_secret: str, grant_type: str):
     """
 

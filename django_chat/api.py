@@ -24,8 +24,9 @@ api = NinjaAPI(version='3.0', title='Chat API', description="内部接口文档"
                    "info": {
                        "terms Of Service": "https://api.chat.alsoapp.com/",
                    }}, docs_url="/docs/", servers=[
+        {"url": "https://api.chat.alsoapp.com", "description": "生产环境"},
         {"url": "https://api-test.chat.alsoapp.com", "description": "测试环境"},
-        {"url": "https://api.chat.alsoapp.com", "description": "生产环境"}, ])
+        {"url": "http://localhost:8000", "description": "本地测试环境"}])
 
 api.add_router("/oauth/", router_oauth)
 api.add_router("/account/", router_account)

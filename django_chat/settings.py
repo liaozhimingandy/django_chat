@@ -205,4 +205,5 @@ NINJA_PAGINATION_MAX_LIMIT = 10  # 每页的最大结果数
 
 from django.contrib import admin
 
+admin.AdminSite.site_title = format(f"{APP_NAME}后台管理")
 admin.AdminSite.site_header = format_html(f'{APP_NAME}后台管理 | <span style="color:white"> {__version__}</span>')

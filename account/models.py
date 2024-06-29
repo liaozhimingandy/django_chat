@@ -1,19 +1,29 @@
 import uuid
-from datetime import datetime
 
-from django.core.exceptions import ValidationError
+from django.contrib.auth.hashers import make_password
 from django.db import models
-
 from django.conf import settings
 from django.utils.crypto import get_random_string
 
 
+def uuid_generator(size: int = 7):
+    return uuid.uuid4().hex[:size]
+
+
+def app_secret_default():
+    return get_random_string(32)
+
+
 def salt_default():
-    return uuid.uuid4().hex[:8]
+    return uuid_generator(8)
 
 
 def userid_default():
-    return uuid.uuid4().hex[:7]
+    return uuid_generator(7)
+
+
+def app_id_default():
+    return uuid_generator(5)
 
 
 # Create your models here.
@@ -32,8 +42,9 @@ class Account(models.Model):
     username = models.CharField(max_length=7, unique=True, db_comment="用户名", help_text="用户名",
                                 verbose_name="用户名", db_index=True, editable=False)
     nick_name = models.CharField(max_length=64, db_comment="昵称", help_text="昵称", verbose_name="昵称")
-    email = models.EmailField(db_comment="电子邮箱", help_text="电子邮箱", verbose_name="电子邮箱",
-                              null=True, db_index=True)
+    email = models.EmailField(db_comment="电子邮箱", help_text="电子邮箱", verbose_name="电子邮箱", null=True,
+                              db_index=True,
+                              blank=True)
     gmt_birth = models.DateTimeField(db_comment="出生日期", help_text="出生日期", verbose_name="出生日期", null=True,
                                      blank=True)
     areaCode = models.CharField(choices=AreaCodeChoices, max_length=3, db_comment="区域代码", help_text="区域代码",
@@ -49,7 +60,8 @@ class Account(models.Model):
                                     verbose_name="账户状态")
     user_type = models.SmallIntegerField(db_comment="账户状态", help_text="账户状态", verbose_name="账户状态",
                                          default=1)
-    password = models.CharField(max_length=128, db_comment="用户密码", help_text="用户密码", verbose_name="用户密码")
+    password = models.CharField(max_length=128, db_comment="用户密码", help_text="用户密码", verbose_name="用户密码",
+                                null=True, blank=True)
     allow_add_friend = models.BooleanField(db_default=True, default=True, db_comment="允许添加好友",
                                            help_text="允许添加好友", verbose_name="允许添加好友")
     allow_beep = models.BooleanField(db_default=True, default=True, db_comment="是否允许提示音",
@@ -67,15 +79,11 @@ class Account(models.Model):
     def __str__(self):
         return f'{self.username}-{self.id}'
 
-    def clean(self):
-        if self.email is not None:
-            # 如果字段不为空，检查其在表中是否已存在
-            if Account.objects.exclude(pk=self.pk).filter(email=self.email).exists():
-                raise ValidationError({'email': '字段必须唯一'})
-        if self.username is not None:
-            # 如果字段不为空，检查其在表中是否已存在
-            if Account.objects.exclude(pk=self.pk).filter(username=self.username).exists():
-                raise ValidationError({'username': '字段必须唯一'})
+    # def clean(self):
+    #     if self.email is not None:
+    #         # 如果字段不为空，检查其在表中是否已存在
+    #         if Account.objects.exclude(pk=self.pk).filter(email=self.email).exists():
+    #             raise ValidationError({'email': '字段必须唯一'})
 
     # 表信息声明
     class Meta:
@@ -83,22 +91,21 @@ class Account(models.Model):
         # 设置数据库中表名
         verbose_name = "用户信息表"
         verbose_name_plural = verbose_name
+        constraints = [
+            models.UniqueConstraint(fields=('username',), name='unique_username'),
+            models.UniqueConstraint(fields=('email',), name='unique_email')
+        ]
 
     def save(self, *args, **kwargs):
         # 判断user_name,是否存在,不存在则使用user_id
         if not self.username and self._state.adding:
             self.username = self.account_id
+        if self.password and self._state.adding:
+            # 密码加密
+            self.password = make_password(self.password)
         # 在保存之前先执行验证
         self.full_clean()
         super().save(*args, **kwargs)
-
-
-def app_id_default():
-    return uuid.uuid4().hex[:5]
-
-
-def app_secret_default():
-    return get_random_string(32)
 
 
 # Create your models here.
