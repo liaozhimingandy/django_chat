@@ -1,0 +1,98 @@
+# 生产环境后端地址
+upstream upstream_exchange {
+    server app:8000;
+    #server 192.168.0.28:8002;
+}
+
+server {
+    listen 80;
+    server_name ${SERVER_NAME};
+    # 将上面 server_name 的 127.0.0.1 换成你nginx服务器的IP地址 
+    root /usr/share/nginx/html;
+    # 将上面 root 的路径换成你 app 项目的目录路径
+    client_max_body_size 10m; 
+    # include default_nginx_ssl.conf;
+
+    # ssl setting
+    listen 443 ssl;
+
+    ssl_certificate /etc/nginx/cert/alsoapp.com_chain.crt; # managed by Certbot
+    ssl_certificate_key /etc/nginx/cert/alsoapp.com_key.key; # managed by Certbot
+    ssl_session_cache shared:SSL:10m;
+    ssl_session_timeout 10m;
+    ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+    ssl_prefer_server_ciphers on;
+    ssl_ciphers 'ECDH+AESGCM:ECDH+AES256:ECDH+AES128:DH+3DES:!ADH:!AECDH:!MD5';
+    resolver 8.8.8.8 8.8.4.4 valid=300s;
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains";
+    add_header X-Frame-Options DENY;
+    add_header X-Content-Type-Options nosniff;
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+    add_header X-Content-Type-Options "nosniff" always;
+
+    #一键申请SSL证书验证目录相关设置
+    location ~ \.well-known{
+        allow all;
+    }
+    # ssl setting end
+
+    location / {
+        # Gunicorn
+        # 如果你使用 gunicorn welink.service 启动
+        # proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Host $http_host;
+        proxy_set_header Host $http_host;
+        proxy_redirect off;
+        proxy_pass http://upstream_exchange$request_uri;
+     }
+
+    # location / {
+      # uwsgi
+      # include uwsgi_params;
+      # socket 套接字描述符方式运行:
+      # uwsgi_pass unix:///opt/app/run/uwsgi.sock;
+      # tcp socket 方式运行:
+      # uwsgi_pass 127.0.0.1:3031;
+    #}
+
+    # other root dir
+    # location / {
+    #    root /usr/share/nginx/html;
+    #    index index.html;
+    #}
+
+    location /static {
+      alias /usr/share/nginx/static;
+      expires      7h;
+      access_log off;
+    }
+        
+    location /media {
+      alias /usr/share/nginx/media;
+      expires      7h;
+      access_log off;
+    }
+
+    # redirect server error pages to the static page /40x.html
+    error_page 400 404 /404.html;
+    location = /404.html{
+        root /usr/share/nginx/html/404;
+    }
+
+    # redirect server error pages to the static page /50x.html
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        root /usr/share/nginx/html/500;
+    }
+
+    access_log /var/log/nginx/access.log;
+    error_log /var/log/nginx/error.log;
+    
+    location ~ /\.ht {
+      deny  all;
+    }
+
+}

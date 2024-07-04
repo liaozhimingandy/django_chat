@@ -17,6 +17,9 @@ from pathlib import Path
 from django import get_version
 from django.utils.html import format_html
 
+from loguru import logger
+
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -27,9 +30,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv(
     "APP_SECRET_KEY", "django-insecure-&(s=fs#s3b9&=8&y_+bhzquk_1-uq)iu@=v=%+&qegp9958%e$"
 )
-
 # 应用版本号
-VERSION = (3, 0, 1, "alpha", 1)
+VERSION = (24, 7, 0, "alpha", 1)
 __version__ = get_version(VERSION)
 APP_NAME = "chat"
 # id前缀
@@ -207,3 +209,9 @@ from django.contrib import admin
 
 admin.AdminSite.site_title = format(f"{APP_NAME}后台管理")
 admin.AdminSite.site_header = format_html(f'{APP_NAME}后台管理 | <span style="color:white"> {__version__}</span>')
+
+##########################################################################################
+# 配置 loguru（可选）
+logger.add("logs/django.log", level="INFO", rotation="10 MB")
+logger.level("INFO")  # 设置全局日志级别
+##########################################################################################

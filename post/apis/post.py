@@ -14,6 +14,7 @@ from typing import List
 from django.utils import timezone
 from ninja import File, ModelSchema, Router
 from ninja.files import UploadedFile
+from ninja.errors import HttpError
 
 from post.lib.utils import get_uploaded_file_md5
 from post.models import Image, Post
@@ -45,10 +46,10 @@ class PostSchemaOut(ModelSchema):
 def list_lasted_post(request):
     """
     获取最近的十条帖子数据
-    :param app_id:
     :param request:
     :return:
     """
+
     posts = Post.objects.order_by('-id')[:10]
     return posts
 
@@ -87,9 +88,16 @@ def image_upload(request, file: UploadedFile = File(...)):
     图片上传
     使用 form-data方式上传
     :param request:
-    :param file:
+    :param file: 文件内容
     :return:
     """
+    # 判断是否为有效图片
+    first_bytes = file.read(8)  # 读取文件前8个字节
+    file_type = is_image(first_bytes)
+    if not file_type:
+        raise HttpError(status_code=400, message="Please upload an image.")
+
+    file.seek(0)
     image_copy = deepcopy(file)
     image_md5 = get_uploaded_file_md5(image_copy)
     # 判断文件是否存在
@@ -99,8 +107,23 @@ def image_upload(request, file: UploadedFile = File(...)):
     else:
         image = Image.objects.get(image_md5=image_md5)
 
-    return {"image_url": image.image.url}
+    return {"image_url": image.image.url, "image_md5": image.image_md5}
 
+
+def is_image(file_bytes):
+    # 根据文件头判断是否为图片
+    file_types = {
+        "JPEG": b"\xFF\xD8",
+        "PNG": b"\x89\x50\x4E\x47\x0D\x0A\x1A\x0A",
+        "GIF": b"GIF",
+        "BMP": b"BM",
+    }
+
+    for file_type, signature in file_types.items():
+        if file_bytes.startswith(signature):
+            return file_type
+
+    return None  # 如果未找到匹配的文件类型
 
 if __name__ == "__main__":
     pass
