@@ -10,7 +10,6 @@ dependencies = [
     "gunicorn>=21.2.0",
     "docutils>=0.20.1",
     "django-cors-headers>=4.3.1",
-    "django-filter>=24.1",
     "Pillow>=10.2.0",
     "pyjwt>=2.8.0",
     "django-ninja>=1.1.0",
