@@ -4,7 +4,8 @@ ARG TAG=3.11.2-slim-buster
 FROM python:${TAG} as builder-image
 
 # pip镜像源
-ENV PIPURL "https://mirrors.aliyun.com/pypi/simple/"
+# ENV PIPURL "https://mirrors.aliyun.com/pypi/simple/"
+ENV PIPURL "https://pypi.org/simple/"
 
 # change apt-get mirror
 COPY pdm.lock .
