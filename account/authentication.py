@@ -7,7 +7,7 @@ from account.common.token import verify_jwt_token
 
 class AuthBearer(HttpBearer):
     """Bearer authentication
-    todo: 后续完善错误详细,目前统一返回 "detail": "Unauthorized"
+    目前统一返回标准响应: {"detail": "Unauthorized"}
     """
     def authenticate(self, request, token):
 

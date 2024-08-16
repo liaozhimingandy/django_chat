@@ -26,7 +26,7 @@ class AccountAdmin(admin.ModelAdmin):
         return list_display
 
     def display_username(self, obj):
-        return f"{settings.PREFIX_ID}{obj.username}"
+        return f"{settings.PREFIX_ID}{obj.username if obj.username else '稍后系统自动生成'}"
 
     display_username.short_description = "用户名"
 

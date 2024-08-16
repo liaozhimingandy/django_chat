@@ -15,10 +15,10 @@ import os
 from pathlib import Path
 
 from django import get_version
+from django.contrib import admin
 from django.utils.html import format_html
 
 from loguru import logger
-
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -31,7 +31,7 @@ SECRET_KEY = os.getenv(
     "APP_SECRET_KEY", "django-insecure-&(s=fs#s3b9&=8&y_+bhzquk_1-uq)iu@=v=%+&qegp9958%e$"
 )
 # 应用版本号
-VERSION = (24, 7, 0, "alpha", 1)
+VERSION = (3, 5, 0, "alpha", 1)
 __version__ = get_version(VERSION)
 APP_NAME = "chat"
 # id前缀
@@ -106,10 +106,10 @@ WSGI_APPLICATION = 'django_chat.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": os.getenv("APP_DB_ENGINE", "django.db.backends.postgresql"),
-        "NAME": os.getenv("APP_DB_NAME", "chat"),
-        "USER": os.getenv("APP_DB_USER", "zhiming"),
-        "PASSWORD": os.getenv("APP_DB_PASSWORD", "zhiming"),
-        "HOST": os.getenv("APP_DB_HOST", "db.chat.alsoapp.com"),
+        "NAME": os.getenv("APP_DB_NAME", "postgres"),
+        "USER": os.getenv("APP_DB_USER", "postgres.oubccwnopeljdjvbhxxx"),
+        "PASSWORD": os.getenv("APP_DB_PASSWORD", "u-PdRf-ZsRJq5Be"),
+        "HOST": os.getenv("APP_DB_HOST", "aws-0-ap-southeast-1.pooler.supabase.com"),
         "PORT": os.getenv("APP_DB_PORT", "5432"),
         'OPTIONS': {
             'options': '-c timezone=Asia/Shanghai',
@@ -205,8 +205,6 @@ NINJA_PAGINATION_PER_PAGE = 10  # 默认页面大小
 NINJA_PAGINATION_MAX_LIMIT = 10  # 每页的最大结果数
 ##########################################################################################
 
-from django.contrib import admin
-
 admin.AdminSite.site_title = format(f"{APP_NAME}后台管理")
 admin.AdminSite.site_header = format_html(f'{APP_NAME}后台管理 | <span style="color:white"> {__version__}</span>')
 
@@ -214,4 +212,5 @@ admin.AdminSite.site_header = format_html(f'{APP_NAME}后台管理 | <span style
 # 配置 loguru（可选）
 logger.add("logs/django.log", level="INFO", rotation="10 MB")
 logger.level("INFO")  # 设置全局日志级别
+# e.g. 直接 from loguru import logger
 ##########################################################################################
